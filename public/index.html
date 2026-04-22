@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Visit Moratuwa | Tourist Day-Visit Planner</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <div class="logo-icon">🌊</div>
+      <div><div class="logo-text">Visit Moratuwa</div><div class="logo-sub">Day-Visit Planner</div></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/" class="active">Attractions</a></li>
+      <li><a href="/planner">📋 My Plan</a></li>
+      <li><span id="navUser" class="hidden" style="color:var(--text);font-weight:700;padding:.45rem .9rem;"></span></li>
+      <li><a href="/admin" id="navAdmin" class="hidden">⚙️ Admin</a></li>
+      <li><a href="/login" id="navLogin">Login</a></li>
+      <li><a href="/register" id="navRegister" class="btn-nav">Register</a></li>
+      <li><a href="#" id="navLogout" class="hidden btn-nav" onclick="logout();return false;">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">📍 Within 25km of Katubedda, Moratuwa</div>
+    <h1>Explore Local<br>Sri Lanka</h1>
+    <p id="heroSub">Discover beautiful attractions near Moratuwa — beaches, temples, museums and parks.</p>
+    <div class="hero-actions">
+      <a href="#attractions" class="btn btn-gold">🗺️ Browse Attractions</a>
+      <a href="/planner" class="btn btn-outline-w">📋 My Day Plan</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="attractions">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2 class="section-title">Tourist <span>Attractions</span></h2>
+      <span id="placeCount" style="color:var(--muted);font-size:.88rem;font-weight:700;"></span>
+    </div>
+
+    <div class="filter-bar">
+      <span class="filter-label">Filter:</span>
+      <div class="filter-chips" id="chips">
+        <span class="chip active" id="chipAll" data-cat="all">All</span>
+      </div>
+      <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search attractions...">
+    </div>
+
+    <div class="loading" id="loader">Loading attractions...</div>
+    <div class="places-grid" id="grid"></div>
+    <div class="empty hidden" id="emptyState">
+      <div class="icon">🔍</div>
+      <p>No attractions found. Try a different filter.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  Local Tourist Day-Visit Planner &nbsp;|&nbsp; Enara Wickramasinghe (E2320627) &nbsp;|&nbsp; ITE2953 &nbsp;|&nbsp; University of Moratuwa © 2026
+</footer>
+<div id="toast"></div>
+<script src="/js/app.js"></script>
+<script>
+let activeCat = 'all';
+
+// All chip
+document.getElementById('chipAll').addEventListener('click', function(){
+  setChip(this); activeCat='all'; load('all', document.getElementById('searchBox').value);
+});
+
+async function loadCats() {
+  const d = await API.get('/api/places/categories');
+  const c = document.getElementById('chips');
+  (d.categories||[]).forEach(cat => {
+    const s = document.createElement('span');
+    s.className='chip'; s.dataset.cat=cat; s.textContent=cat;
+    s.addEventListener('click', function(){ setChip(this); activeCat=cat; load(cat, document.getElementById('searchBox').value); });
+    c.appendChild(s);
+  });
+}
+
+function setChip(el){ document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
+
+async function load(cat='all', search='') {
+  const p = new URLSearchParams();
+  if(cat!=='all') p.set('category',cat);
+  if(search) p.set('search',search);
+  const d = await API.get('/api/places?'+p);
+  document.getElementById('loader').classList.add('hidden');
+  const grid=document.getElementById('grid'), empty=document.getElementById('emptyState');
+  if(!d.places||!d.places.length){ grid.innerHTML=''; empty.classList.remove('hidden'); document.getElementById('placeCount').textContent='0 places'; return; }
+  empty.classList.add('hidden');
+  document.getElementById('placeCount').textContent=`${d.places.length} place${d.places.length!==1?'s':''} found`;
+  document.getElementById('heroSub').textContent=`Discover ${d.places.length} beautiful attractions near Moratuwa — beaches, temples, museums and parks.`;
+  grid.innerHTML = d.places.map(p=>`
+    <div class="place-card">
+      ${p.ImageURL?`<img src="${p.ImageURL}" alt="${p.Name}" class="card-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">`:''}
+      <div class="card-img-ph" ${p.ImageURL?'style="display:none"':''}>${getCatEmoji(p.Category)}</div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="cat-badge ${getCatClass(p.Category)}">${getCatEmoji(p.Category)} ${p.Category}</span>
+          <span class="dist-tag">📍 ${p.Distance}km</span>
+        </div>
+        <h3 class="card-title">${p.Name}</h3>
+        <p class="card-desc">${p.Description}</p>
+        ${p.OpeningHours?`<div class="card-hours">🕐 ${p.OpeningHours}</div>`:''}
+        <div class="card-rating" id="cr-${p.PlaceID}">⭐ Loading...</div>
+        <div class="card-actions">
+          <a href="/place?id=${p.PlaceID}" class="btn btn-sky btn-sm">View Details</a>
+          <button class="btn btn-gold-sm btn-sm" onclick="addPlan(${p.PlaceID},'${p.Name.replace(/'/g,"\\'")}')">+ Add to Plan</button>
+        </div>
+      </div>
+    </div>`).join('');
+  // Load ratings
+  d.places.forEach(async p => {
+    const r = await API.get(`/api/reviews/${p.PlaceID}`);
+    const el = document.getElementById(`cr-${p.PlaceID}`);
+    if(el) el.innerHTML = r.average ? `<span class="stars-yellow">★</span> ${r.average} <span style="color:var(--muted)">(${r.reviews.length} review${r.reviews.length!==1?'s':''})</span>` : `<span style="color:var(--muted)">No reviews yet</span>`;
+  });
+}
+
+async function addPlan(id, name) {
+  const a = await API.get('/api/auth/me');
+  if(!a.loggedIn){ showToast('Please login to save your plan!',true); setTimeout(()=>window.location.href='/login',1500); return; }
+  const d = await API.post('/api/plan/add',{placeId:id});
+  showToast(d.success?`✅ Added: ${name}`:d.message, !d.success);
+}
+
+let st;
+document.getElementById('searchBox').addEventListener('input', function(){
+  clearTimeout(st); st=setTimeout(()=>load(activeCat,this.value),300);
+});
+
+loadCats(); load();
+</script>
+</body>
+</html>

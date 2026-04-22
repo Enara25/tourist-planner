@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Admin | Visit Moratuwa</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="admin-wrap">
+  <aside class="admin-side">
+    <div class="admin-brand"><span>🌊 Admin Panel</span></div>
+    <nav class="admin-nav">
+      <a href="#" onclick="showTab('dashboard')" id="tl-dashboard" class="act">📊 Dashboard</a>
+      <a href="#" onclick="showTab('places')" id="tl-places">🗺️ Manage Places</a>
+      <a href="#" onclick="showTab('users')" id="tl-users">👥 Users</a>
+      <a href="#" onclick="showTab('reviews')" id="tl-reviews">💬 Reviews</a>
+      <a href="/" style="margin-top:2rem;border-top:1px solid rgba(255,255,255,.15);padding-top:1rem;">← Public Site</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard" class="tab-pane act">
+      <div class="admin-header">
+        <h1 class="admin-title">Dashboard</h1>
+        <span id="welcomeMsg" style="font-size:.85rem;color:var(--muted);font-weight:700;"></span>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-n" id="sPlaces">—</div><div class="stat-l">Attractions</div></div>
+        <div class="stat-box"><div class="stat-n" id="sUsers">—</div><div class="stat-l">Registered Users</div></div>
+        <div class="stat-box"><div class="stat-n" id="sReviews">—</div><div class="stat-l">Reviews</div></div>
+      </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <button class="btn btn-sky" onclick="showTab('places')">🗺️ Manage Places</button>
+        <button class="btn btn-gold" onclick="openAdd()">➕ Add New Place</button>
+        <button class="btn btn-sky-outline" onclick="showTab('reviews')">💬 Manage Reviews</button>
+      </div>
+    </div>
+
+    <!-- PLACES -->
+    <div id="tab-places" class="tab-pane">
+      <div class="admin-header">
+        <h1 class="admin-title">Manage Places</h1>
+        <button class="btn btn-gold btn-sm" onclick="openAdd()">➕ Add New Place</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Img</th><th>Name</th><th>Category</th><th>Distance</th><th>Best Time</th><th>Actions</th></tr></thead>
+          <tbody id="placesTbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div id="tab-users" class="tab-pane">
+      <div class="admin-header">
+        <h1 class="admin-title">Registered Users</h1>
+        <span id="userCnt" style="font-size:.85rem;color:var(--muted);font-weight:700;"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr></thead>
+          <tbody id="usersTbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div id="tab-reviews" class="tab-pane">
+      <div class="admin-header"><h1 class="admin-title">All Reviews</h1></div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Place</th><th>Author</th><th>Rating</th><th>Review</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody id="reviewsTbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-bg" id="placeModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2 id="modalTitle">Add New Place</h2>
+    <input type="hidden" id="mId">
+
+    <!-- Basic info -->
+    <div class="fg"><label>Place Name *</label><input type="text" id="mName" placeholder="e.g. Mount Lavinia Beach"></div>
+    <div class="fg">
+      <label>Category *</label>
+      <select id="mCat">
+        <option value="">-- Select --</option>
+        <option>Beach</option><option>Wildlife</option><option>Nature</option>
+        <option>Religious</option><option>Historical</option><option>Museum</option>
+        <option>Recreation</option><option>Cultural</option><option>Urban Park</option>
+      </select>
+    </div>
+    <div class="fg"><label>Distance from Katubedda (km) *</label><input type="number" id="mDist" step="0.1" min="0" max="25" placeholder="e.g. 6.5"></div>
+    <div class="fg"><label>Description *</label><textarea id="mDesc" rows="3" placeholder="Describe the attraction..."></textarea></div>
+    <div class="fg"><label>Opening Hours</label><input type="text" id="mHours" placeholder="e.g. 8:00 AM – 6:00 PM"></div>
+    <div class="two-col">
+      <div class="fg"><label>Latitude *</label><input type="text" id="mLat" placeholder="e.g. 6.8376"></div>
+      <div class="fg"><label>Longitude *</label><input type="text" id="mLng" placeholder="e.g. 79.8660"></div>
+    </div>
+    <div class="fg"><label>Image URL</label><input type="url" id="mImg" placeholder="https://..."></div>
+
+    <!-- Planning notes -->
+    <div style="border-top:1px solid var(--border);margin:.75rem 0;padding-top:.75rem;">
+      <p style="font-size:.78rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;">LOCAL PLANNING NOTES</p>
+      <div class="fg"><label>🌤️ Best Time to Visit</label><input type="text" id="mBestTime" placeholder="e.g. Late afternoon to evening — golden hour sunsets"></div>
+      <div class="fg"><label>💡 Travel Tips</label><textarea id="mTips" rows="2" placeholder="What should visitors know before going?"></textarea></div>
+      <div class="fg"><label>🚌 Transport</label><input type="text" id="mTransport" placeholder="e.g. Bus Route 2 from Moratuwa, about 15 mins"></div>
+      <div class="fg"><label>♿ Accessibility</label><input type="text" id="mAccess" placeholder="e.g. Flat sandy beach, wheelchair accessible"></div>
+      <div class="fg"><label>👥 Crowd Level</label><input type="text" id="mCrowd" placeholder="e.g. Busy on weekends, quiet on weekday mornings"></div>
+    </div>
+
+    <div id="mAlert" class="alert hidden"></div>
+    <div style="display:flex;gap:.75rem;margin-top:1.25rem;">
+      <button class="btn btn-sky" style="flex:1;" onclick="savePlace()">💾 Save Place</button>
+      <button class="btn" style="background:var(--bg);flex:1;" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="/js/app.js"></script>
+<script>
+async function checkAdmin() {
+  const a = await API.get('/api/auth/me');
+  if(!a.loggedIn || a.role !== 'admin'){ location.href = '/login'; return; }
+  document.getElementById('welcomeMsg').textContent = `Welcome back, ${a.name} 👋`;
+  loadAll();
+}
+
+async function loadAll(){ await Promise.all([loadStats(), loadPlaces(), loadUsers(), loadReviews()]); }
+
+async function loadStats(){
+  const d = await API.get('/api/admin/stats');
+  document.getElementById('sPlaces').textContent = d.places ?? '—';
+  document.getElementById('sUsers').textContent = d.users ?? '—';
+  document.getElementById('sReviews').textContent = d.reviews ?? '—';
+}
+
+async function loadPlaces(){
+  const d = await API.get('/api/admin/places');
+  const tb = document.getElementById('placesTbody');
+  if(!d.places?.length){ tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No places yet!</td></tr>'; return; }
+  tb.innerHTML = d.places.map(p => `<tr>
+    <td>${p.ImageURL ? `<img src="${p.ImageURL}" class="thumb" onerror="this.style.display='none'">` : '<div class="thumb" style="display:flex;align-items:center;justify-content:center;">📍</div>'}</td>
+    <td style="font-weight:700;">${p.Name}</td>
+    <td><span class="cat-badge ${getCatClass(p.Category)}">${p.Category}</span></td>
+    <td>${p.Distance}km</td>
+    <td style="font-size:.78rem;color:var(--muted);max-width:180px;">${p.BestTime || '—'}</td>
+    <td><div class="act-btns">
+      <button class="e-btn" onclick="openEdit(${p.PlaceID})">✏️ Edit</button>
+      <button class="d-btn" onclick="delPlace(${p.PlaceID},'${p.Name.replace(/'/g,"\\'")}')">🗑️ Delete</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+async function loadUsers(){
+  const d = await API.get('/api/admin/users');
+  document.getElementById('userCnt').textContent = `${d.users?.length ?? 0} total`;
+  document.getElementById('usersTbody').innerHTML = (d.users||[]).map(u => `<tr>
+    <td>${u.UserID}</td>
+    <td style="font-weight:700;">${u.Name}</td>
+    <td>${u.Email}</td>
+    <td><span style="background:${u.Role==='admin'?'#fef3c7':'var(--sky-light)'};color:${u.Role==='admin'?'#92400e':'var(--sky-deep)'};padding:.18rem .55rem;border-radius:10px;font-size:.75rem;font-weight:800;">${u.Role}</span></td>
+    <td>${new Date(u.CreatedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</td>
+  </tr>`).join('');
+}
+
+async function loadReviews(){
+  const d = await API.get('/api/admin/reviews');
+  document.getElementById('reviewsTbody').innerHTML = (d.reviews||[]).map(r => `<tr>
+    <td style="font-weight:700;">${r.PlaceName}</td>
+    <td>${r.AuthorName}</td>
+    <td>${'★'.repeat(r.Rating)}${'☆'.repeat(5-r.Rating)}</td>
+    <td style="max-width:200px;font-size:.82rem;">${r.Body||'—'}</td>
+    <td style="font-size:.78rem;">${new Date(r.CreatedAt).toLocaleDateString('en-GB')}</td>
+    <td><button class="d-btn" onclick="delReview(${r.ReviewID})">🗑️ Delete</button></td>
+  </tr>`).join('');
+}
+
+function showTab(t){
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('act'));
+  document.querySelectorAll('.admin-nav a[id^="tl-"]').forEach(a => a.classList.remove('act'));
+  document.getElementById('tab-'+t).classList.add('act');
+  document.getElementById('tl-'+t).classList.add('act');
+}
+
+const fields = ['mName','mDist','mDesc','mHours','mLat','mLng','mImg','mBestTime','mTips','mTransport','mAccess','mCrowd'];
+
+function openAdd(){
+  document.getElementById('modalTitle').textContent = 'Add New Place';
+  document.getElementById('mId').value = '';
+  document.getElementById('mCat').value = '';
+  fields.forEach(f => document.getElementById(f).value = '');
+  document.getElementById('mAlert').classList.add('hidden');
+  document.getElementById('placeModal').classList.add('open');
+}
+
+async function openEdit(id){
+  const d = await API.get(`/api/admin/places/${id}`);
+  const p = d.place;
+  document.getElementById('modalTitle').textContent = 'Edit Place';
+  document.getElementById('mId').value = p.PlaceID;
+  document.getElementById('mName').value = p.Name;
+  document.getElementById('mCat').value = p.Category;
+  document.getElementById('mDist').value = p.Distance;
+  document.getElementById('mDesc').value = p.Description;
+  document.getElementById('mHours').value = p.OpeningHours || '';
+  document.getElementById('mLat').value = p.Latitude || '';
+  document.getElementById('mLng').value = p.Longitude || '';
+  document.getElementById('mImg').value = p.ImageURL || '';
+  document.getElementById('mBestTime').value = p.BestTime || '';
+  document.getElementById('mTips').value = p.TravelTips || '';
+  document.getElementById('mTransport').value = p.Transport || '';
+  document.getElementById('mAccess').value = p.Accessibility || '';
+  document.getElementById('mCrowd').value = p.CrowdLevel || '';
+  document.getElementById('mAlert').classList.add('hidden');
+  document.getElementById('placeModal').classList.add('open');
+}
+
+function closeModal(){ document.getElementById('placeModal').classList.remove('open'); }
+document.getElementById('placeModal').addEventListener('click', e => { if(e.target === document.getElementById('placeModal')) closeModal(); });
+
+async function savePlace(){
+  const id = document.getElementById('mId').value;
+  const ab = document.getElementById('mAlert');
+  const name = document.getElementById('mName').value.trim();
+  const cat = document.getElementById('mCat').value;
+  const dist = document.getElementById('mDist').value;
+  const desc = document.getElementById('mDesc').value.trim();
+  if(!name||!cat||!dist||!desc){ ab.className='alert alert-err'; ab.textContent='Please fill in Name, Category, Distance and Description.'; return; }
+  const payload = {
+    name, category:cat, distance:dist, description:desc,
+    hours: document.getElementById('mHours').value,
+    lat: document.getElementById('mLat').value,
+    lng: document.getElementById('mLng').value,
+    imageUrl: document.getElementById('mImg').value,
+    bestTime: document.getElementById('mBestTime').value,
+    travelTips: document.getElementById('mTips').value,
+    transport: document.getElementById('mTransport').value,
+    accessibility: document.getElementById('mAccess').value,
+    crowdLevel: document.getElementById('mCrowd').value,
+  };
+  const d = id ? await API.put(`/api/admin/places/${id}`, payload) : await API.post('/api/admin/places', payload);
+  if(d.success){ closeModal(); showToast(id ? '✅ Place updated!' : '✅ Place added!'); loadPlaces(); loadStats(); }
+  else{ ab.className='alert alert-err'; ab.textContent = d.message || 'Failed.'; }
+}
+
+async function delPlace(id, name){
+  if(!confirm(`Delete "${name}"?\n\nThis cannot be undone.`)) return;
+  await API.delete(`/api/admin/places/${id}`);
+  showToast('🗑️ Deleted.'); loadPlaces(); loadStats();
+}
+
+async function delReview(id){
+  if(!confirm('Delete this review?')) return;
+  await API.delete(`/api/admin/reviews/${id}`);
+  showToast('🗑️ Review deleted.'); loadReviews(); loadStats();
+}
+
+checkAdmin();
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "tourist-day-visit-planner",
+  "version": "2.0.0",
+  "description": "Local Tourist Day-Visit Planner - Enara Wickramasinghe E2320627",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "mysql2": "^3.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Register | Visit Moratuwa</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><div class="logo-icon">🌊</div><div><div class="logo-text">Visit Moratuwa</div><div class="logo-sub">Day-Visit Planner</div></div></a>
+    <ul class="nav-links"><li><a href="/">Attractions</a></li><li><a href="/login" class="btn-nav">Login</a></li></ul>
+  </div>
+</nav>
+
+<div class="form-page">
+  <div class="form-card">
+    <h2 class="form-title">Create Account 🌊</h2>
+    <div id="alertBox" class="alert hidden"></div>
+    <div class="fg"><label>Full Name</label><input type="text" id="name" placeholder="Your full name"></div>
+    <div class="fg"><label>Email Address</label><input type="email" id="email" placeholder="you@example.com"></div>
+    <div class="fg"><label>Password</label><input type="password" id="pass" placeholder="Min. 6 characters"></div>
+    <div class="fg"><label>Confirm Password</label><input type="password" id="pass2" placeholder="Repeat your password"></div>
+    <button class="btn btn-sky w-full" onclick="doRegister()">Create Account →</button>
+    <div class="form-footer" style="margin-top:1rem;">Already have an account? <a href="/login">Login here</a></div>
+  </div>
+</div>
+
+<footer class="footer">Local Tourist Day-Visit Planner | Enara Wickramasinghe (E2320627) | ITE2953 | University of Moratuwa © 2026</footer>
+<div id="toast"></div>
+<script src="/js/app.js"></script>
+<script>
+async function doRegister(){
+  const name=document.getElementById('name').value.trim(), email=document.getElementById('email').value.trim(),
+        pass=document.getElementById('pass').value, pass2=document.getElementById('pass2').value;
+  const ab=document.getElementById('alertBox');
+  if(!name||!email||!pass||!pass2){ab.className='alert alert-err';ab.textContent='Please fill in all fields.';return;}
+  if(pass!==pass2){ab.className='alert alert-err';ab.textContent='Passwords do not match.';return;}
+  if(pass.length<6){ab.className='alert alert-err';ab.textContent='Password must be at least 6 characters.';return;}
+  const d=await API.post('/api/auth/register',{name,email,password:pass});
+  if(d.success){ab.className='alert alert-ok';ab.textContent='✅ Account created! Redirecting...';setTimeout(()=>location.href='/login',1500);}
+  else{ab.className='alert alert-err';ab.textContent=d.message;}
+}
+</script>
+</body>
+</html>

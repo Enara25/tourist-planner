@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>My Day Plan | Visit Moratuwa</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    /* ── TABS ── */
+    .plan-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border); }
+    .plan-tab { padding: .55rem 1.2rem; border-radius: var(--r-sm) var(--r-sm) 0 0; font-size: .88rem; font-weight: 700; cursor: pointer; border: none; background: none; color: var(--muted); transition: all .2s; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+    .plan-tab.active { color: var(--sky-deep); border-bottom-color: var(--sky); background: var(--sky-pale); }
+    .plan-tab:hover:not(.active) { background: var(--bg); color: var(--text); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    /* ── STATS BAR ── */
+    .stats-bar { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .stat-pill { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-sm); padding: .55rem 1rem; font-size: .82rem; font-weight: 700; color: var(--muted); box-shadow: var(--shadow); display: flex; align-items: center; gap: .4rem; }
+    .stat-pill span { color: var(--sky-deep); font-size: .95rem; }
+    /* ── TIME ROW ── */
+    .time-row { display: flex; align-items: center; gap: 1rem; background: var(--sky-pale); border: 1px solid var(--sky-light); border-radius: var(--r-sm); padding: .65rem 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .time-row .time-group { display: flex; align-items: center; gap: .5rem; }
+    .time-row label { font-size: .82rem; font-weight: 700; color: var(--sky-deep); white-space: nowrap; }
+    .time-row input[type=time] { border: 1.5px solid var(--sky-light); border-radius: 6px; padding: .3rem .6rem; font-size: .88rem; font-family: 'Nunito', sans-serif; color: var(--text); background: var(--white); outline: none; }
+    .time-row input[type=time]:focus { border-color: var(--sky); }
+    .time-row .day-ends { font-size: .82rem; font-weight: 700; color: var(--muted); padding: .3rem .75rem; background: var(--white); border: 1px solid var(--border); border-radius: 6px; }
+    .time-row .day-ends span { color: var(--sky-deep); }
+    /* ── ITINERARY ── */
+    .itinerary-stop { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: .85rem; box-shadow: var(--shadow); overflow: hidden; }
+    .itin-header { display: flex; align-items: center; gap: .85rem; padding: .9rem 1rem; cursor: pointer; }
+    .itin-num { width: 30px; height: 30px; background: linear-gradient(135deg, var(--sky), var(--sky-dark)); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .78rem; font-weight: 800; flex-shrink: 0; }
+    .itin-main { flex: 1; }
+    .itin-name { font-weight: 800; font-size: .93rem; }
+    .itin-cat { font-size: .73rem; color: var(--muted); }
+    .itin-times { text-align: right; font-size: .78rem; color: var(--sky-deep); font-weight: 700; white-space: nowrap; }
+    .itin-times .dep { color: var(--muted); font-size: .72rem; }
+    .rm-btn { background: var(--red-light); color: var(--red); border: none; border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: .88rem; display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; }
+    .rm-btn:hover { background: var(--red); color: #fff; }
+    .itin-detail { padding: 0 1rem .85rem 3.8rem; display: none; }
+    .itin-detail.open { display: block; }
+    .itin-row { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-bottom: .6rem; }
+    .itin-field label { display: block; font-size: .72rem; font-weight: 700; color: var(--muted); margin-bottom: .2rem; text-transform: uppercase; letter-spacing: .05em; }
+    .itin-field input, .itin-field select { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: .35rem .65rem; font-size: .84rem; font-family: 'Nunito', sans-serif; color: var(--text); background: var(--bg); outline: none; }
+    .itin-field input:focus, .itin-field select:focus { border-color: var(--sky); background: var(--white); }
+    .itin-notes textarea { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: .4rem .65rem; font-size: .83rem; font-family: 'Nunito', sans-serif; color: var(--text); background: var(--bg); resize: vertical; outline: none; }
+    .itin-notes textarea:focus { border-color: var(--sky); background: var(--white); }
+    .transit-label { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: .5rem 0 .3rem; display: block; }
+    /* ── ROUTE MAP (inline in itinerary) ── */
+    .route-map-section { margin-top: 1.5rem; }
+    .route-map-section h3 { font-family: 'Lora', serif; font-weight: 600; font-size: 1.05rem; margin-bottom: .6rem; }
+    #leafletMap { height: 380px; border-radius: var(--r); border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .map-actions { display: flex; gap: .75rem; margin-top: .75rem; flex-wrap: wrap; }
+    /* ── SAVED TRIPS ── */
+    .saved-trips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:700px) { .saved-trips-grid { grid-template-columns: 1fr; } }
+    .saved-trip-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 1.1rem; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: .5rem; }
+    .saved-trip-name { font-weight: 800; font-size: .97rem; }
+    .saved-trip-meta { font-size: .78rem; color: var(--muted); }
+    .saved-trip-actions { display: flex; gap: .5rem; margin-top: .25rem; }
+    .no-saved { text-align: center; color: var(--muted); font-size: .88rem; padding: 2.5rem; font-style: italic; }
+    /* ── SIDEBAR ── */
+    .side-search-box { width: 100%; border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: .52rem 1rem; font-size: .88rem; font-family: 'Nunito', sans-serif; color: var(--text); background: var(--bg); outline: none; margin-bottom: .75rem; }
+    .side-search-box:focus { border-color: var(--sky); background: var(--white); }
+    .side-item { display: flex; align-items: center; justify-content: space-between; padding: .65rem .5rem; border-bottom: 1px solid var(--border); }
+    .side-item:last-child { border-bottom: none; }
+    .side-item .nm { font-weight: 700; font-size: .87rem; }
+    .side-item .mt { font-size: .73rem; color: var(--muted); }
+    .add-btn { background: var(--sky); color: #fff; border: none; border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; }
+    .add-btn:hover { background: var(--sky-dark); }
+    /* ── SETTINGS ── */
+    .settings-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem; box-shadow: var(--shadow); margin-bottom: 1rem; }
+    .settings-card h3 { font-family: 'Lora', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+    .fg { margin-bottom: .85rem; }
+    .fg label { display: block; font-size: .78rem; font-weight: 700; color: var(--muted); margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .05em; }
+    .fg input { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: .45rem .75rem; font-size: .88rem; font-family: 'Nunito', sans-serif; color: var(--text); background: var(--bg); outline: none; }
+    .fg input:focus { border-color: var(--sky); background: var(--white); }
+    /* ── EMPTY ── */
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+    .empty .icon { font-size: 3rem; margin-bottom: .75rem; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><div class="logo-icon">🌊</div><div><div class="logo-text">Visit Moratuwa</div><div class="logo-sub">Day-Visit Planner</div></div></a>
+    <ul class="nav-links">
+      <li><a href="/">Attractions</a></li>
+      <li><a href="/planner" class="active">📋 My Plan</a></li>
+      <li><span id="navUser" class="hidden" style="color:var(--text);font-weight:700;padding:.45rem .9rem;"></span></li>
+      <li><a href="/admin" id="navAdmin" class="hidden">⚙️ Admin</a></li>
+      <li><a href="/login" id="navLogin">Login</a></li>
+      <li><a href="/register" id="navRegister" class="btn-nav">Register</a></li>
+      <li><a href="#" id="navLogout" class="hidden btn-nav" onclick="logout();return false;">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="planner-wrap">
+  <div class="plan-header">
+    <div>
+      <h1 class="plan-title">My Day Plan 🗓️</h1>
+      <p style="color:var(--muted);font-size:.88rem;margin-top:.25rem;">Build your perfect one-day itinerary around Moratuwa</p>
+    </div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+      <button class="btn btn-sm" style="background:var(--bg);border:1.5px solid var(--border);" onclick="clearAll()">🗑️ Clear All</button>
+      <button class="btn btn-sky btn-sm" onclick="saveTrip()">💾 Save Trip</button>
+      <button class="btn btn-gold btn-sm" onclick="window.print()">🖨️ Print Plan</button>
+    </div>
+  </div>
+
+  <div id="loginNotice" class="hidden" style="margin-bottom:1.25rem;">
+    <div class="alert alert-ok" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>💡 Login to save your plan and access trip history.</span>
+      <a href="/login" class="btn btn-sky btn-sm">Login</a>
+    </div>
+  </div>
+
+  <div class="stats-bar" id="statsBar" style="display:none;">
+    <div class="stat-pill">📍 Stops: <span id="statStops">0</span></div>
+    <div class="stat-pill">📏 Farthest: <span id="statDist">0km</span> from Katubedda</div>
+    <div class="stat-pill">🕐 On site: <span id="statOnSite">0h 0m</span></div>
+    <div class="stat-pill">🚌 Transit: <span id="statTransit">0h 0m</span></div>
+    <div class="stat-pill">🏁 Finish: <span id="statFinish">--:--</span></div>
+  </div>
+
+  <div class="planner-grid">
+    <div>
+      <div class="plan-tabs">
+        <button class="plan-tab active" onclick="switchTab('itinerary',this)">📋 Itinerary Schedule</button>
+        <button class="plan-tab" onclick="switchTab('saved',this)">🗂️ Saved Trips</button>
+        <button class="plan-tab" onclick="switchTab('settings',this)">⚙️ Trip Settings</button>
+      </div>
+
+      <!-- ITINERARY TAB -->
+      <div class="tab-panel active" id="tab-itinerary">
+        <div class="time-row">
+          <div class="time-group">
+            <label>🕗 Day starts at</label>
+            <input type="time" id="startTime" value="08:00" onchange="recalcTimes()">
+          </div>
+          <div class="day-ends" id="dayEndsDisplay">🏁 Day ends at <span>--:--</span></div>
+        </div>
+
+        <div class="empty" id="emptyPlan">
+          <div class="icon">🗺️</div>
+          <p>Your plan is empty.<br>Add attractions from the panel on the right!</p>
+          <a href="/" class="btn btn-sky btn-sm" style="margin-top:1rem;display:inline-flex;">Browse Attractions</a>
+        </div>
+
+        <div id="itineraryList"></div>
+
+        <!-- Route map inline -->
+        <div class="route-map-section hidden" id="routeMapSection">
+          <h3>🗺️ Your Route Map</h3>
+          <div id="leafletMap"></div>
+          <div class="map-actions">
+            <a id="fullRouteLink" href="#" target="_blank" class="btn btn-sky btn-sm">🗺️ Open Full Route in Google Maps</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAVED TRIPS TAB -->
+      <div class="tab-panel" id="tab-saved">
+        <div id="savedTripsContent"></div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div class="tab-panel" id="tab-settings">
+        <div class="settings-card">
+          <h3>Trip Metadata</h3>
+          <div class="fg"><label>Trip Name</label><input type="text" id="tripName" value="My Day Plan" placeholder="e.g. Weekend Moratuwa Tour"></div>
+          <div class="fg"><label>Planned Date</label><input type="date" id="tripDate"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+            <div class="fg"><label>Start Place</label><input type="text" id="tripStart" placeholder="e.g. Moratuwa Town"></div>
+            <div class="fg"><label>End Place</label><input type="text" id="tripEnd" placeholder="e.g. Back home"></div>
+          </div>
+        </div>
+        <div class="settings-card" style="background:var(--sky-pale);border-color:var(--sky-light);">
+          <h3>📋 Field Checklist</h3>
+          <p style="font-size:.83rem;color:var(--sky-deep);margin-bottom:.75rem;">Tips for planning a smooth day trip:</p>
+          <div style="display:flex;flex-direction:column;gap:.6rem;">
+            <div style="background:var(--white);border-radius:8px;padding:.75rem;font-size:.82rem;">🚌 Set the transport mode and travel time after each stop to keep your total day realistic.</div>
+            <div style="background:var(--white);border-radius:8px;padding:.75rem;font-size:.82rem;">📝 Use notes for snacks, viewpoints, footwear, or sunset timing. Don't rely on memory.</div>
+            <div style="background:var(--white);border-radius:8px;padding:.75rem;font-size:.82rem;">⚡ Keep high-energy stops earlier in the day and use easier spots as your late-day wind-down.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div>
+      <div class="side-card">
+        <h3>➕ Add Attractions</h3>
+        <input type="text" class="side-search-box" id="sideSearch" placeholder="🔍 Search places...">
+        <div id="sideList" style="max-height:520px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">Local Tourist Day-Visit Planner | Enara Wickramasinghe (E2320627) | ITE2953 | University of Moratuwa © 2026</footer>
+<div id="toast"></div>
+<script src="/js/app.js"></script>
+<script>
+let isLoggedIn = false;
+let planItems = [];
+let allPlaces = [];
+let leafletMap = null;
+let routeLayer = null;
+let markersLayer = null;
+let mapInitialized = false;
+
+const DEFAULT_STAY = { Beach:90, Wildlife:120, Nature:60, Religious:45, Historical:60, Museum:90, Recreation:75, Cultural:60, 'Urban Park':60 };
+const DEFAULT_TRANSIT = 25;
+
+async function init() {
+  const auth = await API.get('/api/auth/me');
+  isLoggedIn = auth.loggedIn;
+  if (!isLoggedIn) document.getElementById('loginNotice').classList.remove('hidden');
+  const pd = await API.get('/api/places');
+  allPlaces = pd.places || [];
+  if (isLoggedIn) {
+    const plan = await API.get('/api/plan');
+    planItems = (plan.items || []).map(enrichItem);
+  }
+  renderAll();
+  // Init map after DOM is ready
+  setTimeout(() => { initMap(); updateLeafletMap(); }, 200);
+}
+
+function enrichItem(p) {
+  return { ...p, stayMins: p.stayMins || DEFAULT_STAY[p.Category] || 60, transitMins: p.transitMins || DEFAULT_TRANSIT, transport: p.transport || 'Tuk Tuk', notes: p.notes || '' };
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.plan-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'saved') renderSavedTrips();
+}
+
+function renderAll() { recalcTimes(); renderStatsBar(); renderSidebar(allPlaces); }
+
+function recalcTimes() {
+  const [sh, sm] = document.getElementById('startTime').value.split(':').map(Number);
+  let cursor = sh * 60 + sm;
+  planItems.forEach((item, i) => {
+    item.arrTime = fmtTime(cursor);
+    cursor += item.stayMins;
+    item.depTime = fmtTime(cursor);
+    if (i < planItems.length - 1) cursor += item.transitMins;
+  });
+  // Update "day ends at" display
+  const endsEl = document.getElementById('dayEndsDisplay');
+  if (planItems.length) {
+    const last = planItems[planItems.length - 1];
+    endsEl.innerHTML = `🏁 Day ends at <span>${last.depTime}</span>`;
+  } else {
+    endsEl.innerHTML = `🏁 Day ends at <span>--:--</span>`;
+  }
+  renderItinerary();
+  renderStatsBar();
+}
+
+function fmtTime(mins) {
+  const h = Math.floor(mins / 60) % 24, m = mins % 60;
+  const ampm = h >= 12 ? 'PM' : 'AM', hh = h % 12 || 12;
+  return `${hh}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function fmtDuration(mins) {
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+function renderStatsBar() {
+  const bar = document.getElementById('statsBar');
+  if (!planItems.length) { bar.style.display = 'none'; return; }
+  bar.style.display = 'flex';
+  const maxDist = Math.max(...planItems.map(i => parseFloat(i.Distance || 0)));
+  const totalOnSite = planItems.reduce((s, i) => s + i.stayMins, 0);
+  const totalTransit = planItems.slice(0,-1).reduce((s, i) => s + i.transitMins, 0);
+  document.getElementById('statStops').textContent = planItems.length;
+  document.getElementById('statDist').textContent = maxDist + 'km';
+  document.getElementById('statOnSite').textContent = fmtDuration(totalOnSite);
+  document.getElementById('statTransit').textContent = fmtDuration(totalTransit);
+  document.getElementById('statFinish').textContent = planItems[planItems.length - 1]?.depTime || '--:--';
+}
+
+function renderItinerary() {
+  const empty = document.getElementById('emptyPlan');
+  const list = document.getElementById('itineraryList');
+  const mapSec = document.getElementById('routeMapSection');
+  if (!planItems.length) {
+    empty.style.display = 'block';
+    list.innerHTML = '';
+    mapSec.classList.add('hidden');
+    return;
+  }
+  empty.style.display = 'none';
+  mapSec.classList.remove('hidden');
+
+  list.innerHTML = planItems.map((item, i) => {
+    const isLast = i === planItems.length - 1;
+    const id = item.DetailID || item.PlaceID || item.id;
+    return `
+    <div class="itinerary-stop" id="stop-${id}">
+      <div class="itin-header" onclick="toggleStop(${id})">
+        <div class="itin-num">${i + 1}</div>
+        <div class="itin-main">
+          <div class="itin-name">${item.Name || item.name}</div>
+          <div class="itin-cat">${item.Category || ''} · ${item.Distance || 0}km from Katubedda</div>
+        </div>
+        <div class="itin-times">
+          <div>Arr ${item.arrTime || '--'}</div>
+          <div class="dep">Dep ${item.depTime || '--'}</div>
+        </div>
+        <button class="rm-btn" onclick="event.stopPropagation();removeItem(${id})" title="Remove">✕</button>
+      </div>
+      <div class="itin-detail" id="detail-${id}">
+        <div class="itin-row">
+          <div class="itin-field">
+            <label>Stay duration (min)</label>
+            <input type="number" min="5" max="480" value="${item.stayMins}" onchange="updateField(${id},'stayMins',this.value)">
+          </div>
+          ${!isLast ? `<div class="itin-field"><label>Transit to next (min)</label><input type="number" min="0" max="240" value="${item.transitMins}" onchange="updateField(${id},'transitMins',this.value)"></div>` : '<div></div>'}
+        </div>
+        ${!isLast ? `<div class="itin-field" style="margin-bottom:.6rem;"><label>Transport to next stop</label><select onchange="updateField(${id},'transport',this.value)">${['Tuk Tuk','Bus','Walk','Car','Taxi'].map(t=>`<option${item.transport===t?' selected':''}>${t}</option>`).join('')}</select></div>` : ''}
+        <div class="itin-notes">
+          <label class="transit-label">Stop notes</label>
+          <textarea rows="2" placeholder="Add timing reminders, food stops, route notes, or what to do here..." onchange="updateField(${id},'notes',this.value)">${item.notes}</textarea>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Update map after renders
+  setTimeout(updateLeafletMap, 50);
+}
+
+function toggleStop(id) {
+  const el = document.getElementById('detail-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+function updateField(id, field, value) {
+  const item = planItems.find(p => (p.DetailID||p.PlaceID||p.id) == id);
+  if (!item) return;
+  item[field] = (field === 'stayMins' || field === 'transitMins') ? parseInt(value) || 0 : value;
+  recalcTimes();
+}
+
+function initMap() {
+  if (mapInitialized) return;
+  mapInitialized = true;
+  leafletMap = L.map('leafletMap').setView([6.82, 79.90], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors', maxZoom: 19
+  }).addTo(leafletMap);
+}
+
+function updateLeafletMap() {
+  if (!leafletMap) { initMap(); }
+  const withCoords = planItems.filter(i => (i.Latitude || i.lat) && (i.Longitude || i.lng));
+  if (markersLayer) leafletMap.removeLayer(markersLayer);
+  if (routeLayer) leafletMap.removeLayer(routeLayer);
+  if (!withCoords.length) return;
+
+  markersLayer = L.layerGroup();
+  const latlngs = [];
+
+  withCoords.forEach((item, i) => {
+    const lat = parseFloat(item.Latitude || item.lat);
+    const lng = parseFloat(item.Longitude || item.lng);
+    latlngs.push([lat, lng]);
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="width:30px;height:30px;background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25);">${i+1}</div>`,
+      iconSize: [30,30], iconAnchor: [15,15]
+    });
+    const marker = L.marker([lat, lng], { icon });
+    marker.bindPopup(`<b>${item.Name || item.name}</b><br>${item.Category || ''}<br>Arr: ${item.arrTime || '--'}`);
+    markersLayer.addLayer(marker);
+  });
+
+  if (latlngs.length > 1) {
+    routeLayer = L.polyline(latlngs, { color: '#0ea5e9', weight: 3, opacity: 0.85, dashArray: '6,4' });
+    routeLayer.addTo(leafletMap);
+  }
+  markersLayer.addTo(leafletMap);
+  leafletMap.invalidateSize();
+  leafletMap.fitBounds(L.latLngBounds(latlngs).pad(0.2));
+  document.getElementById('fullRouteLink').href = `https://www.google.com/maps/dir/` + latlngs.map(ll => ll.join(',')).join('/');
+}
+
+function renderSidebar(places) {
+  document.getElementById('sideList').innerHTML = places.map(p => {
+    const inPlan = planItems.some(pi => (pi.PlaceID||pi.id) === p.PlaceID);
+    return `<div class="side-item" data-search="${p.Name.toLowerCase()}">
+      <div><div class="nm">${p.Name}</div><div class="mt">${p.Category} · ${p.Distance}km</div></div>
+      ${inPlan
+        ? `<span style="background:#d1fae5;color:#065f46;border-radius:6px;padding:3px 7px;font-size:.75rem;font-weight:800;">✓ Added</span>`
+        : `<button class="add-btn" onclick="addItem(${p.PlaceID},'${p.Name.replace(/'/g,"\\'")}',${p.Distance},'${p.Category}',${p.Latitude||0},${p.Longitude||0})">+</button>`}
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('sideSearch').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('#sideList .side-item').forEach(el => { el.style.display = el.dataset.search.includes(q) ? '' : 'none'; });
+});
+
+async function addItem(id, name, dist, cat, lat, lng) {
+  if (isLoggedIn) {
+    const d = await API.post('/api/plan/add', { placeId: id });
+    if (!d.success) { showToast(d.message, true); return; }
+    const plan = await API.get('/api/plan');
+    planItems = (plan.items || []).map(enrichItem);
+  } else {
+    if (planItems.find(p => (p.PlaceID||p.id) === id)) { showToast('Already in plan!', true); return; }
+    planItems.push(enrichItem({ PlaceID:id, id, Name:name, name, Distance:dist, dist, Category:cat, cat, Latitude:lat, lat, Longitude:lng, lng }));
+  }
+  renderAll();
+  showToast(`✅ Added: ${name}`);
+}
+
+async function removeItem(id) {
+  if (isLoggedIn) {
+    await API.delete(`/api/plan/remove/${id}`);
+    const plan = await API.get('/api/plan');
+    planItems = (plan.items || []).map(enrichItem);
+  } else {
+    planItems = planItems.filter(p => p.DetailID !== id && p.PlaceID !== id && p.id !== id);
+  }
+  renderAll();
+}
+
+async function clearAll() {
+  if (!confirm('Clear your entire plan?')) return;
+  if (isLoggedIn) { await API.delete('/api/plan/clear'); }
+  planItems = [];
+  renderAll();
+}
+
+async function saveTrip() {
+  if (!isLoggedIn) { showToast('Please login to save trips!', true); setTimeout(() => location.href = '/login', 1500); return; }
+  if (!planItems.length) { showToast('Your plan is empty!', true); return; }
+  const name = document.getElementById('tripName').value.trim() || 'My Day Plan';
+  const d = await API.post('/api/plan/save', { name });
+  if (d.success) {
+    showToast(`✅ Trip "${name}" saved!`);
+    // Switch to saved trips tab and reload
+    const savedTab = document.querySelectorAll('.plan-tab')[1];
+    switchTab('saved', savedTab);
+    await renderSavedTrips();
+  } else {
+    showToast(d.message || 'Save failed.', true);
+  }
+}
+
+async function renderSavedTrips() {
+  const el = document.getElementById('savedTripsContent');
+  el.innerHTML = `<p style="color:var(--muted);font-size:.85rem;padding:1rem 0;">Loading...</p>`;
+  if (!isLoggedIn) { el.innerHTML = `<div class="no-saved">Login to save and view your trip history.</div>`; return; }
+  const d = await API.get('/api/plan/saved');
+  const trips = d.trips || [];
+  if (!trips.length) {
+    el.innerHTML = `<div class="no-saved">No saved trips yet.<br>Save your current plan using the "💾 Save Trip" button!</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="saved-trips-grid">${trips.map(t => `
+    <div class="saved-trip-card">
+      <div class="saved-trip-name">📋 ${t.PlanName || 'My Day Plan'}</div>
+      <div class="saved-trip-meta">📅 ${new Date(t.CreatedDate).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})} · ${t.stopCount || 0} stop${t.stopCount!==1?'s':''}</div>
+      <div class="saved-trip-actions">
+        <button class="btn btn-sky btn-sm" onclick="loadTrip(${t.PlanID})">📂 Load</button>
+        <button class="btn btn-sm" style="background:var(--red-light);color:var(--red);" onclick="deleteTrip(${t.PlanID})">🗑️ Delete</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+async function loadTrip(planId) {
+  const d = await API.get(`/api/plan/load/${planId}`);
+  if (d.success) {
+    planItems = (d.items || []).map(enrichItem);
+    renderAll();
+    const itinTab = document.querySelector('.plan-tab');
+    switchTab('itinerary', itinTab);
+    showToast('✅ Trip loaded!');
+  } else showToast('Failed to load trip.', true);
+}
+
+async function deleteTrip(planId) {
+  if (!confirm('Delete this saved trip?')) return;
+  const d = await API.delete(`/api/plan/saved/${planId}`);
+  if (d.success) { showToast('Trip deleted.'); await renderSavedTrips(); }
+  else showToast('Delete failed.', true);
+}
+
+init();
+</script>
+</body>
+</html>

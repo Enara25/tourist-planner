@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Place Detail | Visit Moratuwa</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Sidebar card image */
+    .side-card-img { width: 100%; height: 160px; object-fit: cover; border-radius: var(--r) var(--r) 0 0; display: block; margin: -1.25rem -1.25rem 1rem -1.25rem; width: calc(100% + 2.5rem); }
+    .side-card-img-wrap { margin: -1.25rem -1.25rem 1rem -1.25rem; border-radius: var(--r) var(--r) 0 0; overflow: hidden; height: 160px; }
+    .side-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    /* Planning notes card */
+    .planning-notes { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem; box-shadow: var(--shadow); margin-bottom: 1rem; }
+    .planning-notes .pn-title { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 1rem; }
+    .pn-tip { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: .85rem 1rem; margin-bottom: .75rem; }
+    .pn-tip .pn-label { font-size: .82rem; font-weight: 800; color: #15803d; margin-bottom: .3rem; }
+    .pn-tip .pn-text { font-size: .83rem; color: #166534; line-height: 1.55; }
+    .pn-item { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: .85rem 1rem; margin-bottom: .6rem; display: flex; gap: .75rem; align-items: flex-start; }
+    .pn-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .pn-item .pn-label { font-size: .82rem; font-weight: 800; color: var(--text); margin-bottom: .25rem; }
+    .pn-item .pn-text { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+    /* Review form — full width of left column */
+    .review-form-col { margin-top: 2rem; }
+    .review-form-col h2 { font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 600; margin-bottom: 1.25rem; }
+    .review-form-box { background: var(--sky-pale); border: 1px solid var(--sky-light); border-radius: var(--r); padding: 1.25rem; }
+    .star-picker { display: flex; gap: .5rem; font-size: 1.8rem; cursor: pointer; margin-bottom: 1rem; }
+    .star-picker span { color: #d1d5db; transition: color .15s; }
+    .star-picker span.lit { color: #f59e0b; }
+    /* Reviews sidebar card */
+    .reviews-sidebar { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem; box-shadow: var(--shadow); margin-top: 1rem; }
+    .reviews-sidebar h2 { font-family: 'Lora', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+    .avg-bar { display: flex; align-items: center; gap: 1rem; background: var(--sky-pale); border: 1px solid var(--sky-light); border-radius: var(--r); padding: .9rem 1.1rem; margin-bottom: 1.25rem; }
+    .avg-num { font-size: 2.2rem; font-weight: 800; color: var(--sky-deep); font-family: 'Lora', serif; }
+    .avg-info .avg-stars { font-size: 1.3rem; }
+    .avg-info .avg-label { font-size: .78rem; color: var(--muted); font-weight: 600; }
+    .review-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 1rem 1.1rem; margin-bottom: .85rem; box-shadow: var(--shadow); }
+    .review-header { display: flex; justify-content: space-between; margin-bottom: .4rem; }
+    .review-author { font-weight: 800; font-size: .88rem; }
+    .review-date { font-size: .73rem; color: var(--muted); }
+    .review-stars { color: #f59e0b; font-size: .95rem; margin-bottom: .35rem; }
+    .review-body { font-size: .84rem; color: var(--muted); line-height: 1.55; }
+    .no-reviews { color: var(--muted); font-size: .85rem; font-style: italic; padding: 1rem 0; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><div class="logo-icon">🌊</div><div><div class="logo-text">Visit Moratuwa</div><div class="logo-sub">Day-Visit Planner</div></div></a>
+    <ul class="nav-links">
+      <li><a href="/">Attractions</a></li>
+      <li><a href="/planner">📋 My Plan</a></li>
+      <li><span id="navUser" class="hidden" style="color:var(--text);font-weight:700;padding:.45rem .9rem;"></span></li>
+      <li><a href="/admin" id="navAdmin" class="hidden">⚙️ Admin</a></li>
+      <li><a href="/login" id="navLogin">Login</a></li>
+      <li><a href="/register" id="navRegister" class="btn-nav">Register</a></li>
+      <li><a href="#" id="navLogout" class="hidden btn-nav" onclick="logout();return false;">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="breadcrumb"><a href="/">← Back to Attractions</a></div>
+<div class="loading" id="loader">Loading...</div>
+
+<div class="detail-wrap hidden" id="content">
+  <div class="detail-grid">
+
+    <!-- LEFT MAIN COLUMN -->
+    <div>
+      <img id="dImg" src="" alt="" class="detail-img" onerror="this.style.display='none'">
+      <div class="detail-tags" id="dTags"></div>
+      <h1 class="detail-title" id="dTitle"></h1>
+      <p class="detail-desc" id="dDesc"></p>
+
+      <!-- Info grid -->
+      <div class="info-grid" id="dInfo"></div>
+
+      <!-- Map -->
+      <div id="mapWrap" class="hidden">
+        <h3 style="font-family:'Lora',serif;margin-bottom:.75rem;font-weight:600;">📍 Map Location</h3>
+        <div class="map-box"><iframe id="mapFrame" src="" allowfullscreen loading="lazy"></iframe></div>
+        <a id="directionsLink" href="#" target="_blank" class="btn btn-sky btn-sm" style="margin-top:.75rem;display:inline-flex;">🧭 Get Directions on Google Maps</a>
+      </div>
+
+      <!-- REVIEW FORM — full width left column -->
+      <div class="review-form-col">
+        <h2>✍️ Leave a Review</h2>
+        <div class="review-form-box">
+          <div class="fg"><label>Your Name *</label><input type="text" id="rName" placeholder="Enter your name"></div>
+          <div class="fg">
+            <label>Rating *</label>
+            <div class="star-picker" id="starPicker">
+              <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+            </div>
+          </div>
+          <div class="fg"><label>Your Experience (optional)</label><textarea id="rBody" rows="5" placeholder="Tell others what you loved, what to watch out for, or tips for visiting..."></textarea></div>
+          <div id="rAlert" class="alert hidden"></div>
+          <button class="btn btn-sky w-full" onclick="submitReview()">Submit Review</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div>
+      <!-- Add to plan -->
+      <div class="side-card">
+        <div class="side-card-img-wrap hidden" id="sideImgWrap">
+          <img id="sideImg" src="" alt="">
+        </div>
+        <h3>🗓️ Add to Day Plan</h3>
+        <p>Save this to your personalised one-day itinerary.</p>
+        <button class="btn btn-sky w-full" id="addPlanBtn">+ Add to My Plan</button>
+        <a href="/planner" class="btn btn-sm w-full" style="background:var(--bg);color:var(--muted);margin-top:.5rem;display:flex;">View My Plan →</a>
+      </div>
+
+      <!-- LOCAL PLANNING NOTES -->
+      <div class="planning-notes" id="planningNotes">
+        <div class="pn-title">LOCAL PLANNING NOTES</div>
+        <div id="pnContent"></div>
+      </div>
+
+      <!-- REVIEWS LIST -->
+      <div class="reviews-sidebar">
+        <h2>💬 Reviews & Ratings</h2>
+        <div id="avgBox" class="hidden avg-bar">
+          <div class="avg-num" id="avgNum"></div>
+          <div class="avg-info"><div class="avg-stars" id="avgStars"></div><div class="avg-label" id="avgLabel"></div></div>
+        </div>
+        <div id="reviewsList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">Local Tourist Day-Visit Planner | Enara Wickramasinghe (E2320627) | ITE2953 | University of Moratuwa © 2026</footer>
+<div id="toast"></div>
+<script src="/js/app.js"></script>
+<script>
+const id = new URLSearchParams(location.search).get('id');
+if(!id) location.href='/';
+
+let selectedRating = 0;
+
+document.querySelectorAll('#starPicker span').forEach(s => {
+  s.addEventListener('click', () => { selectedRating = parseInt(s.dataset.v); updateStars(); });
+  s.addEventListener('mouseenter', () => highlight(parseInt(s.dataset.v)));
+  s.addEventListener('mouseleave', () => updateStars());
+});
+function highlight(n) { document.querySelectorAll('#starPicker span').forEach((s,i) => s.classList.toggle('lit', i < n)); }
+function updateStars() { highlight(selectedRating); }
+
+async function loadPlace() {
+  const d = await API.get(`/api/places/${id}`);
+  document.getElementById('loader').classList.add('hidden');
+  if(!d.success){ alert('Place not found!'); location.href='/'; return; }
+  const p = d.place;
+  document.title = p.Name + ' | Visit Moratuwa';
+
+  // Image
+  if(p.ImageURL){
+    document.getElementById('dImg').src = p.ImageURL; document.getElementById('dImg').alt = p.Name;
+    document.getElementById('sideImg').src = p.ImageURL; document.getElementById('sideImg').alt = p.Name;
+    document.getElementById('sideImgWrap').classList.remove('hidden');
+  } else document.getElementById('dImg').style.display = 'none';
+
+  // Tags
+  document.getElementById('dTags').innerHTML = `
+    <span class="cat-badge ${getCatClass(p.Category)}">${p.Category}</span>
+    <span class="cat-badge" style="background:var(--sky-light);color:var(--sky-deep);">📍 ${p.Distance}km from Katubedda</span>`;
+
+  document.getElementById('dTitle').textContent = p.Name;
+  document.getElementById('dDesc').textContent = p.Description;
+
+  // Info grid
+  let info = `
+    <div class="info-card"><div class="lbl">Distance</div><div class="val">${p.Distance} km from Katubedda</div></div>
+    <div class="info-card"><div class="lbl">Category</div><div class="val">${p.Category}</div></div>`;
+  if(p.OpeningHours) info += `<div class="info-card"><div class="lbl">Opening Hours</div><div class="val">${p.OpeningHours}</div></div>`;
+  if(p.BestTime) info += `<div class="info-card" style="grid-column:${p.OpeningHours?'auto':'1 / -1'};"><div class="lbl">🌤️ Best Time to Visit</div><div class="val">${p.BestTime}</div></div>`;
+  document.getElementById('dInfo').innerHTML = info;
+
+  // Map
+  if(p.Latitude && p.Longitude){
+    document.getElementById('mapWrap').classList.remove('hidden');
+    document.getElementById('mapFrame').src = `https://www.google.com/maps?q=${p.Latitude},${p.Longitude}&z=15&output=embed`;
+    document.getElementById('directionsLink').href = `https://www.google.com/maps/dir/?api=1&destination=${p.Latitude},${p.Longitude}`;
+  }
+
+  // Planning Notes sidebar
+  let pnHtml = '';
+  if(p.TravelTips) pnHtml += `
+    <div class="pn-tip">
+      <div class="pn-label">Travel Tips</div>
+      <div class="pn-text">${p.TravelTips}</div>
+    </div>`;
+  if(p.Transport) pnHtml += `
+    <div class="pn-item">
+      <span class="pn-icon">🚌</span>
+      <div><div class="pn-label">Transport</div><div class="pn-text">${p.Transport}</div></div>
+    </div>`;
+  if(p.Accessibility) pnHtml += `
+    <div class="pn-item">
+      <span class="pn-icon">♿</span>
+      <div><div class="pn-label">Accessibility</div><div class="pn-text">${p.Accessibility}</div></div>
+    </div>`;
+  if(p.CrowdLevel) pnHtml += `
+    <div class="pn-item">
+      <span class="pn-icon">👥</span>
+      <div><div class="pn-label">Crowd Level</div><div class="pn-text">${p.CrowdLevel}</div></div>
+    </div>`;
+
+  document.getElementById('pnContent').innerHTML = pnHtml || '<p style="font-size:.83rem;color:var(--muted);">No planning notes available yet.</p>';
+
+  document.getElementById('addPlanBtn').onclick = () => addPlan(p.PlaceID, p.Name);
+  document.getElementById('content').classList.remove('hidden');
+  loadReviews();
+}
+
+async function loadReviews() {
+  const d = await API.get(`/api/reviews/${id}`);
+  const list = document.getElementById('reviewsList');
+  const avgBox = document.getElementById('avgBox');
+
+  if(d.average){
+    avgBox.classList.remove('hidden');
+    document.getElementById('avgNum').textContent = d.average;
+    document.getElementById('avgStars').innerHTML = starHTML(Math.round(d.average));
+    document.getElementById('avgLabel').textContent = `${d.reviews.length} review${d.reviews.length!==1?'s':''}`;
+  }
+
+  if(!d.reviews || !d.reviews.length){
+    list.innerHTML = '<p class="no-reviews">No reviews yet. Be the first to leave one!</p>';
+    return;
+  }
+  list.innerHTML = d.reviews.map(r => `
+    <div class="review-card">
+      <div class="review-header">
+        <span class="review-author">${r.AuthorName}</span>
+        <span class="review-date">${new Date(r.CreatedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</span>
+      </div>
+      <div class="review-stars">${starHTML(r.Rating)}</div>
+      ${r.Body ? `<p class="review-body">${r.Body}</p>` : ''}
+    </div>`).join('');
+}
+
+async function submitReview() {
+  const name = document.getElementById('rName').value.trim();
+  const body = document.getElementById('rBody').value.trim();
+  const ab = document.getElementById('rAlert');
+  if(!name){ ab.className='alert alert-err'; ab.textContent='Please enter your name.'; return; }
+  if(!selectedRating){ ab.className='alert alert-err'; ab.textContent='Please select a star rating.'; return; }
+  const d = await API.post('/api/reviews', { placeId: id, authorName: name, rating: selectedRating, body });
+  if(d.success){
+    ab.className='alert alert-ok'; ab.textContent='✅ Review submitted! Thank you.';
+    document.getElementById('rName').value=''; document.getElementById('rBody').value='';
+    selectedRating=0; updateStars(); loadReviews();
+  } else { ab.className='alert alert-err'; ab.textContent=d.message||'Failed.'; }
+}
+
+async function addPlan(placeId, name) {
+  const a = await API.get('/api/auth/me');
+  if(!a.loggedIn){ showToast('Please login to save your plan!', true); setTimeout(()=>location.href='/login', 1500); return; }
+  const d = await API.post('/api/plan/add', {placeId});
+  showToast(d.success ? `✅ Added: ${name}` : d.message, !d.success);
+}
+
+loadPlace();
+</script>
+</body>
+</html>

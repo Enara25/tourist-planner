@@ -178,11 +178,11 @@
     </div>
     <!-- Guest: only clear all visible -->
     <div id="headerActionsGuest" class="header-actions-guest" style="display:none;">
-      <button class="btn btn-sm" style="background:var(--bg);border:1.5px solid var(--border);" onclick="clearAll()">🗑️ Clear All</button>
+      <button class="btn btn-sm btn-clear" onclick="clearAll()" aria-label="Clear all stops from plan">🗑️ Clear All</button>
     </div>
     <!-- Logged in: full action set -->
     <div id="headerActionsUser" class="header-actions-user" style="display:none;">
-      <button class="btn btn-sm" style="background:var(--bg);border:1.5px solid var(--border);" onclick="clearAll()">🗑️ Clear All</button>
+      <button class="btn btn-sm btn-clear" onclick="clearAll()" aria-label="Clear all stops from plan">🗑️ Clear All</button>
       <button class="btn btn-sky btn-sm" onclick="saveTrip()">💾 Save Trip</button>
       <button class="btn btn-gold btn-sm" onclick="window.print()">🖨️ Print Plan</button>
     </div>
@@ -219,9 +219,9 @@
 
         <!-- Time row: only shown when logged in -->
         <div class="time-row" id="timeRow" style="display:none;">
-          <div class="time-group">
-            <label>🕗 Day starts at</label>
-            <input type="time" id="startTime" value="08:00" onchange="recalcTimes()">
+          <div class="day-ends">
+            <label for="startTime" style="font-weight:700;color:var(--muted);margin-right:.5rem;margin-bottom:0;">🕗 Day starts at</label>
+            <input type="time" id="startTime" value="08:00" onchange="recalcTimes()" aria-label="Day start time" style="border:1.5px solid var(--border);border-radius:6px;padding:.3rem .6rem;font-size:.88rem;font-family:'Nunito',sans-serif;color:var(--text);background:var(--white);outline:none;">
           </div>
           <div class="day-ends" id="dayEndsDisplay">🏁 Day ends at <span>--:--</span></div>
         </div>
@@ -455,14 +455,14 @@ function renderItinerary() {
         <div class="itin-row">
           <div class="itin-field">
             <label>Stay duration (min)</label>
-            <input type="number" min="5" max="480" value="${item.stayMins}" onchange="updateField(${id},'stayMins',this.value)">
+            <input type="number" min="5" max="480" value="${item.stayMins}" aria-label="Stay duration in minutes" onchange="updateField(${id},'stayMins',this.value)">
           </div>
-          ${!isLast ? `<div class="itin-field"><label>Transit to next (min)</label><input type="number" min="0" max="240" value="${item.transitMins}" onchange="updateField(${id},'transitMins',this.value)"></div>` : '<div></div>'}
+          ${!isLast ? `<div class="itin-field"><label>Transit to next (min)</label><input type="number" min="0" max="240" value="${item.transitMins}" aria-label="Transit time in minutes" onchange="updateField(${id},'transitMins',this.value)"></div>` : '<div></div>'}
         </div>
-        ${!isLast ? `<div class="itin-field" style="margin-bottom:.6rem;"><label>Transport to next stop</label><select onchange="updateField(${id},'transport',this.value)">${['Tuk Tuk','Bus','Walk','Car','Taxi'].map(t=>`<option${item.transport===t?' selected':''}>${t}</option>`).join('')}</select></div>` : ''}
+        ${!isLast ? `<div class="itin-field" style="margin-bottom:.6rem;"><label for="transport-${id}">Transport to next stop</label><select id="transport-${id}" aria-label="Transport to next stop" onchange="updateField(${id},'transport',this.value)">${['Tuk Tuk','Bus','Walk','Car','Taxi'].map(t=>`<option${item.transport===t?' selected':''}>${t}</option>`).join('')}</select></div>` : ''}
         <div class="itin-notes">
           <label class="transit-label">Stop notes</label>
-          <textarea rows="2" placeholder="Add timing reminders, food stops, route notes, or what to do here..." onchange="updateField(${id},'notes',this.value)">${item.notes}</textarea>
+          <textarea rows="2" aria-label="Stop notes" placeholder="Add timing reminders, food stops, route notes, or what to do here..." onchange="updateField(${id},'notes',this.value)">${item.notes}</textarea>
         </div>
       </div>
     </div>`;
@@ -686,4 +686,4 @@ async function deleteTrip(planId) {
 init();
 </script>
 </body>
-</html> 
+</html>

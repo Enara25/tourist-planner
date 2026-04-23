@@ -43,6 +43,7 @@
   </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:9999;background:var(--sky);color:#fff;padding:.5rem 1rem;border-radius:0 0 8px 0;font-weight:700;">Skip to main content</a>
 <nav class="navbar">
   <div class="nav-inner">
     <a href="/" class="nav-logo"><div class="logo-icon">🌊</div><div><div class="logo-text">Visit Moratuwa</div><div class="logo-sub">Day-Visit Planner</div></div></a>
@@ -88,7 +89,7 @@
           <div class="fg"><label>Your Name *</label><input type="text" id="rName" placeholder="Enter your name"></div>
           <div class="fg">
             <label>Rating *</label>
-            <div class="star-picker" id="starPicker">
+            <div class="star-picker" role="group" aria-label="Rate this place" id="starPicker">
               <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
             </div>
           </div>

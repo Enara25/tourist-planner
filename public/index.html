@@ -7,6 +7,7 @@
 </head>
 <body>
 
+<a href="#attractions" class="skip-link">Skip to main content</a>
 <nav class="navbar">
   <div class="nav-inner">
     <a href="/" class="nav-logo">
@@ -14,7 +15,7 @@
       <div><div class="logo-text">Visit Moratuwa</div><div class="logo-sub">Day-Visit Planner</div></div>
     </a>
     <ul class="nav-links">
-      <li><a href="/" class="active">Attractions</a></li>
+      <li><a href="#attractions" class="active" aria-label="View all attractions">Attractions</a></li>
       <li><a href="/planner">📋 My Plan</a></li>
       <li><span id="navUser" class="hidden" style="color:var(--text);font-weight:700;padding:.45rem .9rem;"></span></li>
       <li><a href="/admin" id="navAdmin" class="hidden">⚙️ Admin</a></li>
@@ -31,8 +32,8 @@
     <h1>Explore Local<br>Sri Lanka</h1>
     <p id="heroSub">Discover beautiful attractions near Moratuwa — beaches, temples, museums and parks.</p>
     <div class="hero-actions">
-      <a href="#attractions" class="btn btn-gold">🗺️ Browse Attractions</a>
-      <a href="/planner" class="btn btn-outline-w">📋 My Day Plan</a>
+      <a href="#attractions" class="btn btn-gold" aria-label="Browse attractions">🗺️ Browse Attractions</a>
+      <a href="/planner" class="btn btn-outline-w" aria-label="My Day Plan">📋 My Day Plan</a>
     </div>
   </div>
 </section>
@@ -45,11 +46,12 @@
     </div>
 
     <div class="filter-bar">
-      <span class="filter-label">Filter:</span>
-      <div class="filter-chips" id="chips">
+      <label class="filter-label" id="filterLabel">Filter:</label>
+      <div class="filter-chips" id="chips" role="group" aria-labelledby="filterLabel">
         <span class="chip active" id="chipAll" data-cat="all">All</span>
       </div>
-      <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search attractions...">
+      <label for="searchBox" class="sr-only">Search attractions</label>
+      <input type="text" class="search-box" id="searchBox" placeholder="Search attractions...">
     </div>
 
     <div class="loading" id="loader">Loading attractions...</div>

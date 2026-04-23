@@ -1,6 +1,7 @@
 // server/routes/admin.js
 const express = require('express');
 const db = require('../db');
+const { normalizeImageInput } = require('../image-data');
 const router = express.Router();
 
 function requireAdmin(req, res, next) {
@@ -28,20 +29,30 @@ router.get('/places/:id', requireAdmin, async (req, res) => {
 router.post('/places', requireAdmin, async (req, res) => {
   const { name, category, distance, description, hours, lat, lng, imageUrl, bestTime, travelTips, transport, accessibility, crowdLevel } = req.body;
   if (!name || !category || !distance || !description) return res.json({ success: false, message: 'Required fields missing.' });
-  await db.query(
-    'INSERT INTO places (Name,Category,Distance,Description,OpeningHours,Latitude,Longitude,ImageURL,BestTime,TravelTips,Transport,Accessibility,CrowdLevel) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
-    [name, category, parseFloat(distance), description, hours||null, lat||null, lng||null, imageUrl||null, bestTime||null, travelTips||null, transport||null, accessibility||null, crowdLevel||null]
-  );
-  res.json({ success: true, message: 'Place added!' });
+  try {
+    const normalizedImage = await normalizeImageInput(imageUrl);
+    await db.query(
+      'INSERT INTO places (Name,Category,Distance,Description,OpeningHours,Latitude,Longitude,ImageURL,BestTime,TravelTips,Transport,Accessibility,CrowdLevel) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      [name, category, parseFloat(distance), description, hours||null, lat||null, lng||null, normalizedImage, bestTime||null, travelTips||null, transport||null, accessibility||null, crowdLevel||null]
+    );
+    res.json({ success: true, message: 'Place added!' });
+  } catch (e) {
+    res.json({ success: false, message: e.message || 'Failed to add place.' });
+  }
 });
 
 router.put('/places/:id', requireAdmin, async (req, res) => {
   const { name, category, distance, description, hours, lat, lng, imageUrl, bestTime, travelTips, transport, accessibility, crowdLevel } = req.body;
-  await db.query(
-    'UPDATE places SET Name=?,Category=?,Distance=?,Description=?,OpeningHours=?,Latitude=?,Longitude=?,ImageURL=?,BestTime=?,TravelTips=?,Transport=?,Accessibility=?,CrowdLevel=? WHERE PlaceID=?',
-    [name, category, parseFloat(distance), description, hours||null, lat||null, lng||null, imageUrl||null, bestTime||null, travelTips||null, transport||null, accessibility||null, crowdLevel||null, req.params.id]
-  );
-  res.json({ success: true, message: 'Updated!' });
+  try {
+    const normalizedImage = await normalizeImageInput(imageUrl);
+    await db.query(
+      'UPDATE places SET Name=?,Category=?,Distance=?,Description=?,OpeningHours=?,Latitude=?,Longitude=?,ImageURL=?,BestTime=?,TravelTips=?,Transport=?,Accessibility=?,CrowdLevel=? WHERE PlaceID=?',
+      [name, category, parseFloat(distance), description, hours||null, lat||null, lng||null, normalizedImage, bestTime||null, travelTips||null, transport||null, accessibility||null, crowdLevel||null, req.params.id]
+    );
+    res.json({ success: true, message: 'Updated!' });
+  } catch (e) {
+    res.json({ success: false, message: e.message || 'Failed to update place.' });
+  }
 });
 
 router.delete('/places/:id', requireAdmin, async (req, res) => {

@@ -36,7 +36,7 @@ function buildDmToggle() {
 }
 
 const API = {
-  async get(url) { const r = await fetch(url,{credentials:'include'}); return r.json(); },
+  async get(url) { const r = await fetch(url,{credentials:'include',cache:'no-store'}); return r.json(); },
   async post(url,data) { const r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify(data)}); return r.json(); },
   async put(url,data) { const r = await fetch(url,{method:'PUT',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify(data)}); return r.json(); },
   async delete(url) { const r = await fetch(url,{method:'DELETE',credentials:'include'}); return r.json(); }

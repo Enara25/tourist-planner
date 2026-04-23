@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS places (
     OpeningHours VARCHAR(150),
     Latitude DECIMAL(10,7) NOT NULL,
     Longitude DECIMAL(10,7) NOT NULL,
-    ImageURL VARCHAR(600),
+    ImageURL LONGTEXT,
     BestTime VARCHAR(150),
     TravelTips TEXT,
     Transport VARCHAR(255),

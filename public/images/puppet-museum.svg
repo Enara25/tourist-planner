@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Traditional Puppet Art Museum Placeholder</title>
+  <desc id="desc">Decorative placeholder art for the Traditional Puppet Art Museum.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <circle cx="380" cy="280" r="90" fill="#fff7ed" opacity="0.9"/>
+  <circle cx="820" cy="280" r="90" fill="#ffedd5" opacity="0.8"/>
+  <rect x="320" y="350" width="120" height="220" rx="24" fill="#7c2d12"/>
+  <rect x="760" y="350" width="120" height="220" rx="24" fill="#7c2d12"/>
+  <path d="M380 370 C320 430 310 520 380 580 C450 520 440 430 380 370Z" fill="#fde68a"/>
+  <path d="M820 370 C760 430 750 520 820 580 C890 520 880 430 820 370Z" fill="#fed7aa"/>
+  <line x1="380" y1="130" x2="380" y2="215" stroke="#ffffff" stroke-width="10"/>
+  <line x1="820" y1="130" x2="820" y2="215" stroke="#ffffff" stroke-width="10"/>
+  <text x="600" y="685" text-anchor="middle" font-family="Georgia, serif" font-size="64" fill="#fff7ed">
+    Traditional Puppet Art Museum
+  </text>
+</svg>

@@ -104,7 +104,12 @@
       <div class="fg"><label>Latitude *</label><input type="text" id="mLat" placeholder="e.g. 6.8376"></div>
       <div class="fg"><label>Longitude *</label><input type="text" id="mLng" placeholder="e.g. 79.8660"></div>
     </div>
-    <div class="fg"><label>Image URL</label><input type="url" id="mImg" placeholder="https://..."></div>
+    <div class="fg"><label>Image Source</label><input type="text" id="mImg" placeholder="/images/mount-lavinia.png or https://..."></div>
+    <div class="fg"><label>Upload Image</label><input type="file" id="mImgFile" accept="image/*"></div>
+    <div class="fg hidden" id="mImgPreviewWrap">
+      <label>Preview</label>
+      <img id="mImgPreview" alt="Place preview" class="thumb" style="width:120px;height:80px;object-fit:cover;">
+    </div>
 
     <!-- Planning notes -->
     <div style="border-top:1px solid var(--border);margin:.75rem 0;padding-top:.75rem;">
@@ -192,12 +197,16 @@ function showTab(t){
 }
 
 const fields = ['mName','mDist','mDesc','mHours','mLat','mLng','mImg','mBestTime','mTips','mTransport','mAccess','mCrowd'];
+let selectedImageData = '';
 
 function openAdd(){
   document.getElementById('modalTitle').textContent = 'Add New Place';
   document.getElementById('mId').value = '';
   document.getElementById('mCat').value = '';
   fields.forEach(f => document.getElementById(f).value = '');
+  selectedImageData = '';
+  document.getElementById('mImgFile').value = '';
+  setImagePreview('');
   document.getElementById('mAlert').classList.add('hidden');
   document.getElementById('placeModal').classList.add('open');
 }
@@ -215,6 +224,9 @@ async function openEdit(id){
   document.getElementById('mLat').value = p.Latitude || '';
   document.getElementById('mLng').value = p.Longitude || '';
   document.getElementById('mImg').value = p.ImageURL || '';
+  selectedImageData = '';
+  document.getElementById('mImgFile').value = '';
+  setImagePreview(p.ImageURL || '');
   document.getElementById('mBestTime').value = p.BestTime || '';
   document.getElementById('mTips').value = p.TravelTips || '';
   document.getElementById('mTransport').value = p.Transport || '';
@@ -226,6 +238,35 @@ async function openEdit(id){
 
 function closeModal(){ document.getElementById('placeModal').classList.remove('open'); }
 document.getElementById('placeModal').addEventListener('click', e => { if(e.target === document.getElementById('placeModal')) closeModal(); });
+
+function setImagePreview(src){
+  const wrap = document.getElementById('mImgPreviewWrap');
+  const img = document.getElementById('mImgPreview');
+  if(!src){
+    wrap.classList.add('hidden');
+    img.removeAttribute('src');
+    return;
+  }
+  img.src = src;
+  wrap.classList.remove('hidden');
+}
+
+document.getElementById('mImg').addEventListener('input', function(){
+  if(selectedImageData) return;
+  setImagePreview(this.value.trim());
+});
+
+document.getElementById('mImgFile').addEventListener('change', async function(){
+  const file = this.files?.[0];
+  if(!file){ selectedImageData=''; setImagePreview(document.getElementById('mImg').value.trim()); return; }
+  selectedImageData = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Failed to read image.'));
+    reader.readAsDataURL(file);
+  });
+  setImagePreview(selectedImageData);
+});
 
 async function savePlace(){
   const id = document.getElementById('mId').value;
@@ -240,7 +281,7 @@ async function savePlace(){
     hours: document.getElementById('mHours').value,
     lat: document.getElementById('mLat').value,
     lng: document.getElementById('mLng').value,
-    imageUrl: document.getElementById('mImg').value,
+    imageUrl: selectedImageData || document.getElementById('mImg').value,
     bestTime: document.getElementById('mBestTime').value,
     travelTips: document.getElementById('mTips').value,
     transport: document.getElementById('mTransport').value,

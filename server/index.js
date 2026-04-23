@@ -1,8 +1,8 @@
 // server/index.js
 const express = require('express');
-const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
+const { attachAuth } = require('./auth');
 
 const authRoutes = require('./routes/auth');
 const placesRoutes = require('./routes/places');
@@ -12,16 +12,13 @@ const reviewRoutes = require('./routes/reviews');
 
 const app = express();
 const PORT = 3000;
+const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: true, credentials: true }));
-app.use(session({
-  secret: 'visit-moratuwa-e2320627',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 15 * 60 * 1000 }
-}));
+app.set('trust proxy', 1);
+app.use(attachAuth);
 
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -38,9 +35,13 @@ app.get('/login', (req, res) => res.sendFile(path.join(__dirname, '../public/pag
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, '../public/pages/register.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, '../public/pages/admin.html')));
 
-app.listen(PORT, () => {
-  console.log('');
-  console.log('🌊 Visit Moratuwa — Tourist Day-Visit Planner');
-  console.log(`👉 Open: http://localhost:${PORT}`);
-  console.log('');
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log('');
+    console.log('🌊 Visit Moratuwa — Tourist Day-Visit Planner');
+    console.log(`👉 Open: http://localhost:${PORT}`);
+    console.log('');
+  });
+}
+
+module.exports = app;

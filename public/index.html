@@ -112,19 +112,15 @@ async function load(cat='all', search='') {
         <h3 class="card-title">${p.Name}</h3>
         <p class="card-desc">${p.Description}</p>
         ${p.OpeningHours?`<div class="card-hours">🕐 ${p.OpeningHours}</div>`:''}
-        <div class="card-rating" id="cr-${p.PlaceID}">⭐ Loading...</div>
+        <div class="card-rating">
+          ${p.AverageRating ? `<span class="stars-yellow">★</span> ${p.AverageRating} <span style="color:var(--muted)">(${p.ReviewCount} review${Number(p.ReviewCount)!==1?'s':''})</span>` : `<span style="color:var(--muted)">No reviews yet</span>`}
+        </div>
         <div class="card-actions">
           <a href="/place?id=${p.PlaceID}" class="btn btn-sky btn-sm">View Details</a>
           <button class="btn btn-gold-sm btn-sm" onclick="addPlan(${p.PlaceID},'${p.Name.replace(/'/g,"\\'")}')">+ Add to Plan</button>
         </div>
       </div>
     </div>`).join('');
-  // Load ratings
-  d.places.forEach(async p => {
-    const r = await API.get(`/api/reviews/${p.PlaceID}`);
-    const el = document.getElementById(`cr-${p.PlaceID}`);
-    if(el) el.innerHTML = r.average ? `<span class="stars-yellow">★</span> ${r.average} <span style="color:var(--muted)">(${r.reviews.length} review${r.reviews.length!==1?'s':''})</span>` : `<span style="color:var(--muted)">No reviews yet</span>`;
-  });
 }
 
 async function addPlan(id, name) {

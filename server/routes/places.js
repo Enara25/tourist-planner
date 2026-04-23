@@ -6,11 +6,19 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { category, search } = req.query;
-    let q = 'SELECT * FROM places WHERE 1=1';
+    let q = `
+      SELECT
+        p.*,
+        ROUND(AVG(r.Rating), 1) AS AverageRating,
+        COUNT(r.ReviewID) AS ReviewCount
+      FROM places p
+      LEFT JOIN reviews r ON r.PlaceID = p.PlaceID
+      WHERE 1=1
+    `;
     const p = [];
-    if (category && category !== 'all') { q += ' AND Category=?'; p.push(category); }
-    if (search) { q += ' AND Name LIKE ?'; p.push(`%${search}%`); }
-    q += ' ORDER BY Distance ASC';
+    if (category && category !== 'all') { q += ' AND p.Category=?'; p.push(category); }
+    if (search) { q += ' AND p.Name LIKE ?'; p.push(`%${search}%`); }
+    q += ' GROUP BY p.PlaceID ORDER BY p.Distance ASC';
     const [places] = await db.query(q, p);
     res.json({ success: true, places });
   } catch(e) { res.json({ success: false, places: [] }); }

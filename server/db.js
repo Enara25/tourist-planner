@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   user: process.env.user, 
   password: process.env.password, 
   database: process.env.database,
-  waitForConnections: true, connectionLimit: 10
+  ssl: { rejectUnauthorized: false },
 });
 pool.getConnection()
   .then(c => { console.log('✅ MySQL connected!'); c.release(); })

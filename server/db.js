@@ -12,7 +12,7 @@ const globalPoolKey = "__touristPlannerDbPool";
 
 if (isProduction && !process.env.DB_PORT && process.env.PORT) {
   console.warn(
-    "⚠️ DB_PORT is not set. PORT is reserved for the app runtime on platforms like Vercel and is not used for MySQL.",
+    "⚠️ DB_PORT is not set.",
   );
 }
 

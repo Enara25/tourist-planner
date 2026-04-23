@@ -1,5 +1,40 @@
 // public/js/app.js — shared utilities
 
+/* ── DARK MODE ─────────────────────────────────────────────
+   Persists in localStorage as 'vm_theme' = 'dark' | 'light'
+   Applied to <html data-theme="dark|light">
+   Works across all pages — apply on every page load first.
+   ──────────────────────────────────────────────────────── */
+(function applyThemeEarly() {
+  const saved = localStorage.getItem('vm_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+
+function toggleDarkMode() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('vm_theme', next);
+  updateAllDmToggles(next);
+}
+
+function updateAllDmToggles(theme) {
+  document.querySelectorAll('.dm-label').forEach(el => {
+    el.textContent = theme === 'dark' ? '☀️' : '🌙';
+  });
+  document.querySelectorAll('.dm-toggle').forEach(btn => {
+    btn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+  });
+}
+
+function buildDmToggle() {
+  const saved = localStorage.getItem('vm_theme') || 'light';
+  const isDark = saved === 'dark';
+  return `<button class="dm-toggle" onclick="toggleDarkMode()" title="${isDark ? 'Switch to light mode' : 'Switch to dark mode'}">
+    <span class="dm-label">${isDark ? '☀️' : '🌙'}</span>
+  </button>`;
+}
+
 const API = {
   async get(url) { const r = await fetch(url,{credentials:'include'}); return r.json(); },
   async post(url,data) { const r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify(data)}); return r.json(); },
@@ -49,6 +84,35 @@ async function initNav() {
     if(logout_) logout_.classList.add('hidden');
     if(user) user.classList.add('hidden');
     if(admin) admin.classList.add('hidden');
+  }
+  injectDmToggle();
+}
+
+function injectDmToggle() {
+  const navInner = document.querySelector('.nav-inner');
+  if (!navInner) {
+    const adminBrand = document.querySelector('.admin-brand');
+    if (adminBrand && !adminBrand.querySelector('.dm-toggle')) {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'margin-top:.75rem;';
+      wrapper.innerHTML = buildDmToggle();
+      adminBrand.appendChild(wrapper);
+    }
+    return;
+  }
+  if (navInner.querySelector('.dm-toggle')) return;
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = buildDmToggle();
+  const btn = wrapper.firstElementChild;
+  const logo = navInner.querySelector('.nav-logo');
+  const navLinks = navInner.querySelector('.nav-links');
+  if (logo && navLinks) {
+    logo.insertAdjacentElement('afterend', btn);
+    const spacer = document.createElement('div');
+    spacer.style.cssText = 'flex:1;';
+    btn.insertAdjacentElement('afterend', spacer);
+  } else {
+    navInner.appendChild(btn);
   }
 }
 

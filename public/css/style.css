@@ -19,7 +19,7 @@ img{max-width:100%;}
 
 /* ── NAVBAR ── */
 .navbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(14,165,233,0.08);}
-.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:66px;}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:66px;gap:.5rem;}
 .nav-logo{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--sky),var(--sky-deep));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;box-shadow:0 4px 12px rgba(14,165,233,0.35);}
 .logo-text{font-family:'Lora',serif;font-size:1.05rem;font-weight:600;color:var(--text);line-height:1.2;}
@@ -149,7 +149,6 @@ img{max-width:100%;}
 .plan-info .mt{font-size:.77rem;color:var(--muted);}
 .rm-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:1.1rem;opacity:.6;transition:opacity .2s;padding:4px;}
 .rm-btn:hover{opacity:1;}
-/* Planner map */
 .planner-map{border-radius:var(--r);overflow:hidden;height:400px;border:1px solid var(--border);box-shadow:var(--shadow);margin-top:1rem;}
 .planner-map iframe{width:100%;height:100%;border:none;}
 .side-search-box{padding:.52rem 1rem;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.88rem;font-family:'Nunito',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:all .2s;width:100%;margin-bottom:.75rem;font-weight:500;}
@@ -233,3 +232,90 @@ img{max-width:100%;}
 /* ── RESPONSIVE ── */
 @media(max-width:960px){.detail-grid,.planner-grid{grid-template-columns:1fr;}.info-grid{grid-template-columns:1fr;}.admin-wrap{flex-direction:column;}.admin-side{width:100%;}}
 @media(max-width:640px){.hero h1{font-size:2rem;}.places-grid{grid-template-columns:1fr;}.two-col{grid-template-columns:1fr;}.nav-links li:nth-child(-n+3){display:none;}}
+
+/* ══════════════════════════════════════════════
+   DARK MODE — applied via <html data-theme="dark">
+   Persists across pages via localStorage key: vm_theme
+   ══════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --sky: #38bdf8;
+  --sky-dark: #0ea5e9;
+  --sky-deep: #7dd3fc;
+  --sky-light: #0c2d3f;
+  --sky-pale: #0a1e2b;
+  --gold: #fbbf24;
+  --gold-light: #1c1400;
+  --bg: #0f172a;
+  --white: #1e293b;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --border: #334155;
+  --red: #f87171;
+  --red-light: #1f0a0a;
+  --shadow: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.55);
+}
+
+/* Smooth theme transitions on key properties */
+body, .navbar, .place-card, .form-card, .side-card,
+.modal, .review-card, .itinerary-stop, .saved-trip-card,
+.settings-card, .filter-bar, .data-table td, .stat-box,
+.data-table, input, select, textarea, .chip,
+.time-row, .stat-pill, .itin-detail, .info-card {
+  transition: background-color .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease;
+}
+
+[data-theme="dark"] .navbar { background: #1e293b; box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+[data-theme="dark"] .hero { background: linear-gradient(135deg, #0c2a3d 0%, #0369a1 55%, #0284c7 100%); }
+[data-theme="dark"] .footer { background: linear-gradient(135deg, #0a1929, #0c2d3f); }
+[data-theme="dark"] .modal { background: #1e293b; }
+[data-theme="dark"] .admin-side { background: linear-gradient(180deg, #0a1929, #0c2233); }
+[data-theme="dark"] .admin-main { background: var(--bg); }
+[data-theme="dark"] .data-table th { background: #0c2d3f; }
+[data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background: #0f172a; color: var(--text); border-color: var(--border); }
+[data-theme="dark"] .card-img-ph { background: linear-gradient(135deg, #0c2d3f, #0a1929); }
+[data-theme="dark"] .place-card:hover { border-color: #0ea5e9; }
+[data-theme="dark"] .nav-links a:hover, [data-theme="dark"] .nav-links a.active { color: var(--sky-deep); background: var(--sky-pale); }
+[data-theme="dark"] .cat-beach    { background:#0c2040; color:#93c5fd; }
+[data-theme="dark"] .cat-wildlife { background:#0a2018; color:#6ee7b7; }
+[data-theme="dark"] .cat-nature   { background:#0a2010; color:#86efac; }
+[data-theme="dark"] .cat-religious{ background:#1c1400; color:#fcd34d; }
+[data-theme="dark"] .cat-historical{ background:#160e2a; color:#c4b5fd; }
+[data-theme="dark"] .cat-museum   { background:#1f0a0a; color:#fca5a5; }
+[data-theme="dark"] .cat-recreation{ background:#0a1e2b; color:#7dd3fc; }
+[data-theme="dark"] .cat-cultural { background:#1a0a1f; color:#e879f9; }
+[data-theme="dark"] .cat-urban-park{ background:#0a1f0d; color:#86efac; }
+[data-theme="dark"] .alert-ok { background: #0a1e2b; color: var(--sky-deep); border-color: #0c2d3f; }
+[data-theme="dark"] .avg-rating { background: #0a1e2b; border-color: #0c2d3f; }
+[data-theme="dark"] .review-form { background: #0a1e2b; border-color: #0c2d3f; }
+
+/* ── DARK MODE TOGGLE — icon only, no slider ── */
+.dm-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all .2s;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+}
+.dm-toggle:hover {
+  border-color: var(--sky);
+  background: var(--sky-pale);
+  transform: scale(1.1);
+}
+[data-theme="dark"] .dm-toggle {
+  background: var(--white);
+  border-color: var(--border);
+}
+[data-theme="dark"] .dm-toggle:hover {
+  background: var(--sky-pale);
+  border-color: var(--sky);
+}

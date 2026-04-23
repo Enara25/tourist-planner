@@ -310,6 +310,10 @@ body,.navbar,.place-card,.form-card,.side-card,
 [data-theme="dark"] .plan-tab.locked{color:#94a3b8;}
 [data-theme="dark"] .add-btn{background:#0ea5e9;color:#ffffff;}
 [data-theme="dark"] .add-btn:hover{background:#38bdf8;color:#ffffff;}
+[data-theme="dark"] .chip{color:#e2e8f0;border-color:#475569;}
+[data-theme="dark"] .chip:hover{color:#ffffff;border-color:#7dd3fc;background:#0c2d3f;}
+[data-theme="dark"] .filter-label{color:#e2e8f0;}
+[data-theme="dark"] .card-desc,[data-theme="dark"] .card-hours,[data-theme="dark"] .card-rating,[data-theme="dark"] .dist-tag,[data-theme="dark"] .review-body,[data-theme="dark"] .review-date,[data-theme="dark"] .detail-desc,[data-theme="dark"] .side-card p,[data-theme="dark"] .avg-label{color:#e2e8f0;}
 
 /* ── CLEAR ALL BUTTON ── */
 .btn-clear{background:var(--bg);border:1.5px solid var(--border);color:var(--text);}

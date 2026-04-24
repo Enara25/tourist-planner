@@ -64,13 +64,13 @@ CREATE TABLE IF NOT EXISTS reviews (
 );
 
 -- ============================================================
--- 14 TOURIST ATTRACTIONS — updated precise coordinates
+-- 14 TOURIST ATTRACTIONS — precise Google Maps coordinates
 -- ============================================================
 INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitude, Longitude, ImageURL, BestTime, TravelTips, Transport, Accessibility, CrowdLevel) VALUES
 
 ('Mount Lavinia Beach', 'Beach', 6.00,
 'A golden beach stretching along the Indian Ocean, perfect for sunset strolls and fresh seafood. The clifftop Mount Lavinia Hotel adds a charming colonial backdrop to this iconic destination just south of Colombo.',
-'Open 24 hours', 6.8372, 79.8722,
+'Open 24 hours', 6.8383817, 79.8629240,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Mount_Lavinia_Beach_%281%29.jpg/1280px-Mount_Lavinia_Beach_%281%29.jpg',
 'Late afternoon to evening — golden hour sunsets are stunning',
 'Bring sunscreen and water. Avoid swimming during rough sea conditions. Food stalls are best visited after 5 PM.',
@@ -80,9 +80,9 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('Dehiwala Zoological Garden', 'Wildlife', 8.00,
 'One of the oldest and most visited zoos in South Asia, home to over 3,000 animals across 350 species. Famous for elephant shows, the zoo also features an impressive aquarium and botanical garden.',
-'8:30 AM – 6:00 PM Daily', 6.8524, 79.8710,
+'8:30 AM - 6:00 PM Daily', 6.8567363, 79.8743673,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Elephant_at_Dehiwala_zoo.jpg/1280px-Elephant_at_Dehiwala_zoo.jpg',
-'Morning (8:30–11:00 AM) — animals are most active and it is cooler',
+'Morning (8:30-11:00 AM) — animals are most active and it is cooler',
 'Arrive early to catch the elephant show. Wear comfortable shoes as there is a lot of walking. Bring water and snacks.',
 'Bus Route 2 from Moratuwa stops near the zoo. Tuk-tuks easily available.',
 'Paved pathways throughout. Mostly wheelchair accessible but some areas are uneven.',
@@ -90,9 +90,9 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('Attidiya Bird Sanctuary', 'Nature', 9.00,
 'A tranquil wetland reserve sheltering over 70 species of birds. An ideal escape for birdwatchers and nature photographers seeking calm green surroundings on the outskirts of Colombo.',
-'Daily — Sunrise to Sunset', 6.8416, 79.8913,
+'Daily — Sunrise to Sunset', 6.8370138, 79.8906674,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Attidiya_bird_sanctuary.JPG/1280px-Attidiya_bird_sanctuary.JPG',
-'Early morning (6:00–9:00 AM) — best for birdwatching when birds are most active',
+'Early morning (6:00-9:00 AM) — best for birdwatching when birds are most active',
 'Bring binoculars for the best birdwatching experience. Wear muted colours and walk quietly to avoid disturbing birds. Insect repellent recommended.',
 'Best reached by tuk-tuk. Limited public transport directly to the sanctuary.',
 'Flat walking paths but some muddy areas after rain. Wear closed shoes.',
@@ -100,7 +100,7 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('Bolgoda Lake', 'Nature', 5.00,
 'Sri Lanka''s largest natural lake spanning Panadura and Moratuwa. Ideal for boating, kayaking and peaceful lakeside picnics. A favourite weekend getaway for locals.',
-'Open 24 hours', 6.7711, 79.9075,
+'Open 24 hours', 6.7703752, 79.9087290,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Bolgoda_Lake_Sri_Lanka.jpg/1280px-Bolgoda_Lake_Sri_Lanka.jpg',
 'Early morning or late afternoon — calm waters and beautiful light for photos',
 'Hire a boat for the best experience. Bring insect repellent for the evening. The lake is best enjoyed at sunset.',
@@ -110,9 +110,9 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('Gangaramaya Temple', 'Religious', 18.00,
 'One of Sri Lanka''s most important Buddhist temples, beside Beira Lake in Colombo. Home to a fascinating museum and library, it dazzles during the Navam Perahera festival.',
-'6:00 AM – 10:00 PM', 6.9164, 79.8564,
+'6:00 AM - 10:00 PM', 6.9167145, 79.8566456,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Gangaramaya_temple_colombo.jpg/1280px-Gangaramaya_temple_colombo.jpg',
-'Morning (7:00–10:00 AM) — peaceful atmosphere before crowds arrive',
+'Morning (7:00-10:00 AM) — peaceful atmosphere before crowds arrive',
 'Dress modestly — cover shoulders and knees. Remove shoes before entering. The museum inside is a must-see.',
 'Take a bus to Colombo Fort then a tuk-tuk. About 45 minutes from Moratuwa.',
 'Mostly accessible but some uneven stone flooring inside the temple complex.',
@@ -120,7 +120,7 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('Independence Memorial Hall', 'Historical', 17.00,
 'A magnificent national monument commemorating Sri Lanka''s independence from British rule in 1948. Set within beautiful park grounds popular with families and history enthusiasts.',
-'8:30 AM – 5:00 PM', 6.9046, 79.8673,
+'8:30 AM - 5:00 PM', 6.9041620, 79.8675756,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Independence_memorial_hall_of_sri_lanka.jpg/1280px-Independence_memorial_hall_of_sri_lanka.jpg',
 'Morning — cooler temperatures make it more comfortable for walking the grounds',
 'Great for photography especially in the morning light. Walk around the entire monument for the best views.',
@@ -130,7 +130,7 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('Viharamahadevi Park', 'Urban Park', 18.00,
 'Colombo''s oldest and largest public park. A golden Buddha statue presides over well-kept grounds, popular for family outings, jogging, and cultural events.',
-'Open 24 hours', 6.9133, 79.8617,
+'Open 24 hours', 6.9142322, 79.8625967,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Viharamahadevi_Park.jpg/1280px-Viharamahadevi_Park.jpg',
 'Early morning or late evening — ideal for a relaxing stroll when it is cool',
 'Ideal for a picnic lunch. The park has clean benches and open lawns. The fountain area is great for photos.',
@@ -140,7 +140,7 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('National Museum of Colombo', 'Museum', 18.00,
 'Sri Lanka''s largest museum, founded in 1877. Preserves the royal throne and crown of the Kandyan Kings and rare artefacts spanning over 2,500 years of history.',
-'9:00 AM – 5:00 PM (Closed Fridays)', 6.9104, 79.8610,
+'9:00 AM - 5:00 PM (Closed Fridays)', 6.9099984, 79.8609130,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Colombo_national_museum.jpg/1280px-Colombo_national_museum.jpg',
 'Morning — allows enough time to explore all galleries before closing',
 'Plan at least 2 hours to explore. Photography allowed in most areas. Closed on Fridays — plan accordingly.',
@@ -150,9 +150,9 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('Galle Face Green', 'Recreation', 20.00,
 'A beloved ocean-side promenade in central Colombo. Famous for kite flying, street food, and spectacular sunsets over the Indian Ocean.',
-'Open 24 hours', 6.9266, 79.8435,
+'Open 24 hours', 6.9237882, 79.8449324,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Galle_Face_Green.jpg/1280px-Galle_Face_Green.jpg',
-'Late afternoon to sunset (4:00–7:00 PM) — the golden hour views are breathtaking',
+'Late afternoon to sunset (4:00-7:00 PM) — the golden hour views are breathtaking',
 'Try the local street food — isso wade and kottu are must-haves. Best visited at sunset. Keep your belongings secure in busy evenings.',
 'Bus to Colombo Fort then a tuk-tuk to Galle Face. About 55 minutes from Moratuwa.',
 'Flat open promenade. Fully accessible for wheelchairs and pushchairs.',
@@ -160,17 +160,17 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('Bellanwila Rajamaha Viharaya', 'Religious', 10.00,
 'A highly revered Buddhist temple dating back to the 3rd century BC. Famous for its magnificent Perahera procession featuring beautifully adorned elephants.',
-'5:30 AM – 9:00 PM', 6.8456, 79.8900,
+'5:30 AM - 9:00 PM', 6.8459815, 79.8900585,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Bellanwila_Raja_Maha_Viharaya.jpg/1280px-Bellanwila_Raja_Maha_Viharaya.jpg',
-'Early morning (5:30–8:00 AM) — most serene with morning prayers and offerings',
+'Early morning (5:30-8:00 AM) — most serene with morning prayers and offerings',
 'Dress respectfully — cover shoulders and knees. Remove shoes at the entrance. The temple grounds are very peaceful early in the morning.',
-'Take a tuk-tuk from Moratuwa or Dehiwala. About 20–25 minutes.',
+'Take a tuk-tuk from Moratuwa or Dehiwala. About 20-25 minutes.',
 'Some uneven stone paths. Wear flat shoes. Partial wheelchair access.',
 'Busy on poya days and during the annual Perahera. Quiet on regular weekday mornings.'),
 
 ('Sri Lanka Air Force Museum', 'Historical', 7.00,
 'An open-air aviation museum at Ratmalana Air Force Base. Features decommissioned fighter jets, helicopters, and transport aircraft on display.',
-'9:00 AM – 5:00 PM (Closed Mondays)', 6.8242, 79.8917,
+'9:00 AM - 5:00 PM (Closed Mondays)', 6.8238621, 79.8917824,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/SLAF_Ratmalana_Museum.jpg/1280px-SLAF_Ratmalana_Museum.jpg',
 'Morning — cooler and better lighting for aircraft photography',
 'Great for aviation enthusiasts and families with children. Bring a camera for the aircraft displays. Closed on Mondays.',
@@ -180,7 +180,7 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 
 ('Traditional Puppet Art Museum', 'Cultural', 8.00,
 'A charming museum dedicated to Sri Lanka''s traditional puppet arts including Kolam masks and Nadagam puppets. A rare cultural gem.',
-'9:00 AM – 5:00 PM', 6.8400, 79.8700,
+'9:00 AM - 5:00 PM', 6.8400000, 79.8700000,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Sri_Lanka_Puppet.jpg/800px-Sri_Lanka_Puppet.jpg',
 'Morning or afternoon — any time during opening hours is equally good',
 'A short but fascinating visit. Photography is usually allowed. A great place to learn about traditional Sri Lankan performing arts.',
@@ -189,22 +189,22 @@ INSERT INTO places (Name, Category, Distance, Description, OpeningHours, Latitud
 'Usually quiet — a hidden gem. Rarely crowded.'),
 
 ('Barefoot Gallery', 'Cultural', 19.00,
-'A beloved Colombo institution celebrating Sri Lankan arts, crafts and textile design. The shaded garden café is perfect for a relaxed afternoon.',
-'10:00 AM – 7:00 PM', 6.9295, 79.8911,
+'A beloved Colombo institution celebrating Sri Lankan arts, crafts and textile design. The shaded garden cafe is perfect for a relaxed afternoon.',
+'10:00 AM - 7:00 PM', 6.8967387, 79.8542722,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Barefoot_Gallery_Colombo.jpg/1280px-Barefoot_Gallery_Colombo.jpg',
-'Mid-morning to afternoon — relax at the garden café after browsing',
-'Perfect for buying handmade gifts and souvenirs. The garden café serves great food. Combine with nearby Galle Face for a full day out in Colombo.',
+'Mid-morning to afternoon — relax at the garden cafe after browsing',
+'Perfect for buying handmade gifts and souvenirs. The garden cafe serves great food. Combine with nearby Galle Face for a full day out in Colombo.',
 'Bus to Colombo then tuk-tuk to Galle Road, Colombo 3. About 55 minutes.',
 'Ground floor is accessible. Garden has gravel paths so not ideal for wheelchairs.',
 'Moderate crowds throughout the week. Busier on weekend afternoons.'),
 
 ('Isipathanaramaya Temple', 'Religious', 16.00,
 'One of Colombo''s oldest Buddhist temples, believed to be over 2,000 years old. Known for its serene atmosphere and towering white dagoba.',
-'5:00 AM – 9:00 PM', 6.8888, 79.8656,
+'5:00 AM - 9:00 PM', 6.8888423, 79.8656242,
 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Isipathanaramaya_Temple.jpg/1280px-Isipathanaramaya_Temple.jpg',
-'Early morning (5:00–8:00 AM) — tranquil with the sound of morning chanting',
+'Early morning (5:00-8:00 AM) — tranquil with the sound of morning chanting',
 'Dress modestly and remove shoes. The temple grounds are excellent for quiet reflection. Photography respectfully allowed.',
-'Bus to Havelock Town then a short walk. About 40–45 minutes from Moratuwa.',
+'Bus to Havelock Town then a short walk. About 40-45 minutes from Moratuwa.',
 'Flat paved grounds around the dagoba. Good general accessibility.',
 'Quiet and peaceful most days. Busier on poya days with devotees.');
 

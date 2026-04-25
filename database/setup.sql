@@ -38,7 +38,9 @@ CREATE TABLE IF NOT EXISTS visit_plans (
     PlanID INT AUTO_INCREMENT PRIMARY KEY,
     UserID INT NOT NULL,
     PlanName VARCHAR(150) DEFAULT 'My Day Plan',
+    IsDraft TINYINT(1) NOT NULL DEFAULT 0,
     CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_visit_plans_user_draft_created (UserID, IsDraft, CreatedDate),
     FOREIGN KEY (UserID) REFERENCES users(UserID) ON DELETE CASCADE
 );
 
@@ -47,6 +49,7 @@ CREATE TABLE IF NOT EXISTS plan_details (
     PlanID INT NOT NULL,
     PlaceID INT NOT NULL,
     OrderIndex INT DEFAULT 0,
+    KEY idx_plan_details_plan_order (PlanID, OrderIndex),
     FOREIGN KEY (PlanID) REFERENCES visit_plans(PlanID) ON DELETE CASCADE,
     FOREIGN KEY (PlaceID) REFERENCES places(PlaceID) ON DELETE CASCADE
 );
